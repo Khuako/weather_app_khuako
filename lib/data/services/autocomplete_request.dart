@@ -3,7 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:weather_assistant/config/api_keys.dart';
 
 Future<Map<String, dynamic>> fetchGeoData(String text) async {
-  var url = Uri.parse('https://api.geoapify.com/v1/geocode/autocomplete?text=$text&apiKey=$mapApiKey');
+  var url = Uri.parse('https://geocoding-api.open-meteo'
+      '.com/v1/search?name=${text}&count=10&language=ru&format=json');
   try {
     var response = await http.get(url);
     if (response.statusCode == 200) {

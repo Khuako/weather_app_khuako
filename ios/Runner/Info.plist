@@ -6,6 +6,10 @@
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
 	<string>Weather Assistant</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>Мы используем вашу геолокацию для показа погоды</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Мы используем вашу геолокацию для показа погоды</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

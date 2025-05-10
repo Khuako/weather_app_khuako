@@ -1,0 +1,10 @@
+R_DEF: Internal format may change without notice
+local
+drawable launch_background
+drawable launcher_icon_background
+mipmap ic_launcher
+mipmap launcher_icon
+mipmap launcher_icon_foreground
+mipmap launcher_icon_round
+style LaunchTheme
+style NormalTheme

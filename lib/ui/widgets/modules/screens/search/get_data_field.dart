@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:weather_assistant/bloc/screens/results/weather_info_bloc.dart';
-import 'package:weather_assistant/ui/screens/results/results_screen.dart';
+import 'package:weather_assistant/ui/screens/results_screen.dart';
 
 class GetDataField extends StatelessWidget {
   final LatLng mapPoint;
@@ -28,7 +28,7 @@ class GetDataField extends StatelessWidget {
             );
           },
           child: const Text(
-            "Собрать информацию",
+            "Узнать погоду",
             style: TextStyle(color: Colors.white, fontSize: 16),
           )),
     );

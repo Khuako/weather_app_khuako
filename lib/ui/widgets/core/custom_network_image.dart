@@ -5,9 +5,9 @@ class CustomNetworkImage extends StatelessWidget {
   final double? height;
   final double? width;
   final BoxFit? boxFit;
-
+  final Color? color;
   const CustomNetworkImage(
-      {super.key, required this.url, this.height, this.width, this.boxFit});
+      {super.key, required this.url, this.height, this.width, this.boxFit, this.color,});
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +17,7 @@ class CustomNetworkImage extends StatelessWidget {
         width: width,
         height: height,
         fit: boxFit ?? BoxFit.contain,
+        color: color,
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) {
             return child;

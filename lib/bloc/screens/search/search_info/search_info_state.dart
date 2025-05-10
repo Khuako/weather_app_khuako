@@ -6,9 +6,9 @@ abstract class SearchInfoState {}
 class SearchInfoInitial extends SearchInfoState {}
 
 class SearchInfoFetched extends SearchInfoState {
-  final List<AutocompleteModel> autocompleteList;
+  final AutocompleteModel autocompleteModel;
 
-  SearchInfoFetched({required this.autocompleteList});
+  SearchInfoFetched({required this.autocompleteModel});
 }
 
 class SearchInfoLoading extends SearchInfoState {}

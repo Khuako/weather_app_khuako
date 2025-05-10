@@ -19,9 +19,9 @@ class SearchInfoBloc extends Bloc<SearchInfoEvent, SearchInfoState> {
       if (text.isNotEmpty && text.length>2) {
         var data = await fetchGeoData(text);
         if (data.isNotEmpty) {
-          var result = processAutocompleteData(data);
-          if (result.isNotEmpty) {
-            emit(SearchInfoFetched(autocompleteList: result));
+          var result = AutocompleteModel.fromJson(data);
+          if (result.results?.isNotEmpty == true) {
+            emit(SearchInfoFetched(autocompleteModel: result));
           }
         }
       }

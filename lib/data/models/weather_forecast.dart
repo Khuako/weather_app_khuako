@@ -8,7 +8,6 @@ class WeatherForecast {
   final String timezoneAbbreviation;
   final HourlyData hourly;
   final HourlyUnits hourlyUnits;
-
   WeatherForecast({
     required this.latitude,
     required this.longitude,
@@ -20,7 +19,29 @@ class WeatherForecast {
     required this.hourly,
     required this.hourlyUnits,
   });
-
+  WeatherForecast copyWith({
+    double? latitude,
+    double? longitude,
+    double? elevation,
+    double? generationTimeMs,
+    int? utcOffsetSeconds,
+    String? timezone,
+    String? timezoneAbbreviation,
+    HourlyData? hourly,
+    HourlyUnits? hourlyUnits,
+  }) {
+    return WeatherForecast(
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      elevation: elevation ?? this.elevation,
+      generationTimeMs: generationTimeMs ?? this.generationTimeMs,
+      utcOffsetSeconds: utcOffsetSeconds ?? this.utcOffsetSeconds,
+      timezone: timezone ?? this.timezone,
+      timezoneAbbreviation: timezoneAbbreviation ?? this.timezoneAbbreviation,
+      hourly: hourly ?? this.hourly,
+      hourlyUnits: hourlyUnits ?? this.hourlyUnits,
+    );
+  }
   // Метод для преобразования из JSON
   factory WeatherForecast.fromJson(Map<String, dynamic> json) {
     return WeatherForecast(
@@ -55,10 +76,18 @@ class WeatherForecast {
 class HourlyData {
   final List<String> time;
   final List<double> temperature2m;
+  final List<double>? precipitationSum;
+  final List<double>? rainSum;
+  final List<double>? snowfallSum;
+  final List<int>? precipitationProbability;
 
   HourlyData({
     required this.time,
     required this.temperature2m,
+    this.precipitationSum,
+    this.rainSum,
+    this.snowfallSum,
+    this.precipitationProbability,
   });
 
   // Метод для преобразования из JSON
@@ -66,6 +95,18 @@ class HourlyData {
     return HourlyData(
       time: List<String>.from(json['time']),
       temperature2m: List<double>.from(json['temperature_2m']),
+      precipitationSum: json['precipitation_sum'] != null
+          ? List<double>.from(json['precipitation_sum'])
+          : null,
+      rainSum: json['rain_sum'] != null
+          ? List<double>.from(json['rain_sum'])
+          : null,
+      snowfallSum: json['snowfall_sum'] != null
+          ? List<double>.from(json['snowfall_sum'])
+          : null,
+      precipitationProbability: json['precipitation_probability'] != null
+          ? List<int>.from(json['precipitation_probability'])
+          : null,
     );
   }
 
@@ -74,19 +115,38 @@ class HourlyData {
     return {
       'time': time,
       'temperature_2m': temperature2m,
+      if (precipitationSum != null) 'precipitation_sum': precipitationSum,
+      if (rainSum != null) 'rain_sum': rainSum,
+      if (snowfallSum != null) 'snowfall_sum': snowfallSum,
+      if (precipitationProbability != null)
+        'precipitation_probability': precipitationProbability,
     };
   }
 }
 
 class HourlyUnits {
   final String temperature2m;
+  final String? precipitationSum;
+  final String? rainSum;
+  final String? snowfallSum;
+  final String? precipitationProbability;
 
-  HourlyUnits({required this.temperature2m});
+  HourlyUnits({
+    required this.temperature2m,
+    this.precipitationSum,
+    this.rainSum,
+    this.snowfallSum,
+    this.precipitationProbability,
+  });
 
   // Метод для преобразования из JSON
   factory HourlyUnits.fromJson(Map<String, dynamic> json) {
     return HourlyUnits(
       temperature2m: json['temperature_2m'],
+      precipitationSum: json['precipitation_sum'],
+      rainSum: json['rain_sum'],
+      snowfallSum: json['snowfall_sum'],
+      precipitationProbability: json['precipitation_probability'],
     );
   }
 
@@ -94,6 +154,11 @@ class HourlyUnits {
   Map<String, dynamic> toJson() {
     return {
       'temperature_2m': temperature2m,
+      if (precipitationSum != null) 'precipitation_sum': precipitationSum,
+      if (rainSum != null) 'rain_sum': rainSum,
+      if (snowfallSum != null) 'snowfall_sum': snowfallSum,
+      if (precipitationProbability != null)
+        'precipitation_probability': precipitationProbability,
     };
   }
 }
