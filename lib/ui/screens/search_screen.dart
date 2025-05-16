@@ -7,6 +7,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:weather_assistant/bloc/screens/favorite/favorite_info_bloc.dart';
 import 'package:weather_assistant/bloc/screens/route/all_routes_cubit.dart';
 import 'package:weather_assistant/bloc/screens/search/change_map/change_map_bloc.dart';
+import 'package:weather_assistant/climate_screen/climate_screen.dart';
 import 'package:weather_assistant/config/api_keys.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:weather_assistant/config/config.dart';
@@ -16,7 +17,9 @@ import 'package:weather_assistant/ui/screens/weather_routes/weather_routes_scree
 import 'package:weather_assistant/ui/widgets/colors.dart';
 import 'package:weather_assistant/ui/widgets/modules/screens/search/get_data_field.dart';
 import 'package:weather_assistant/ui/widgets/modules/screens/search/search_field.dart';
+
 const LatLng constMapPoint = LatLng(55.748886, 37.617209);
+
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key, required this.mapPoint});
   final LatLng mapPoint;
@@ -28,7 +31,6 @@ class _SearchScreenState extends State<SearchScreen> {
   late LatLng _mapPoint;
   MapController mapController = MapController();
   bool showPrecipitationLayer = false; // Состояние отображения слоя осадков
-
 
   @override
   void dispose() {
@@ -74,6 +76,23 @@ class _SearchScreenState extends State<SearchScreen> {
                     MaterialPageRoute(
                       builder: (context) => const FavoriteScreen(),
                     ),
+                  );
+                },
+              ),
+              ListTile(
+                title: Text(
+                  'Климат-аналитика',
+                  style: GoogleFonts.rubik(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                leading: const Icon(Icons.thermostat, color: Colors.white),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ClimateScreen()),
                   );
                 },
               ),
@@ -145,9 +164,8 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               children: [
                 TileLayer(
-                  urlTemplate:
-                      'https://maps.geoapify.com/v1/tile/positron/{z}/{x}/{y}'
-                          '.png?apiKey=$mapApiKey',
+                  urlTemplate: 'https://maps.geoapify.com/v1/tile/positron/{z}/{x}/{y}'
+                      '.png?apiKey=$mapApiKey',
                   errorTileCallback: (tile, error, stackTrace) {
                     print(error);
                   },
@@ -201,7 +219,9 @@ class _SearchScreenState extends State<SearchScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SearchField(
-                onDrawerPressed: scaffoldKey.currentState?.openDrawer,
+                onDrawerPressed: () {
+                  scaffoldKey.currentState?.openDrawer();
+                },
                 showMenu: true,
               ),
               Padding(

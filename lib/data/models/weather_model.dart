@@ -280,8 +280,6 @@ class Day {
   }
 }
 
-
-
 class Hour {
   int? timeEpoch;
   String? time;
@@ -393,4 +391,88 @@ class Hour {
       uv: json['uv'] as int?,
     );
   }
+}
+
+WeatherResponse mapOpenWeather(Map<String, dynamic> src) {
+  // 1. location
+  final loc = Location(
+    name: src['city']?['name'],
+    country: src['city']?['country'],
+    lat: (src['city']?['coord']?['lat'] as num?)?.toDouble(),
+    lon: (src['city']?['coord']?['lon'] as num?)?.toDouble(),
+    localtimeEpoch: src['list']?[0]?['dt'] as int?,
+    localtime:
+        DateTime.fromMillisecondsSinceEpoch((src['list']?[0]?['dt'] as int?)! * 1000, isUtc: true)
+            .toLocal()
+            .toIso8601String(),
+  );
+
+  // 2. current — берём первый элемент списка
+  final first = src['list'][0];
+  final cur = CurrentWeather(
+    tempC: (first['main']?['temp'] as num?)?.toDouble(),
+    feelslikeC: (first['main']?['feels_like'] as num?)?.toDouble(),
+    humidity: first['main']?['humidity'] as int?,
+    windKph: (first['wind']?['speed'] as num?)?.toDouble(),
+    condition: Condition(
+      text: first['weather']?[0]?['description'],
+      icon: 'https://openweathermap.org/img/wn/${first['weather']?[0]?['icon']}@2x.png',
+      code: first['weather']?[0]?['id'] as int?,
+    ),
+  );
+
+  // 3. forecast на 3 дня — группируем list по дате
+  final Map<String, List<dynamic>> byDay = {};
+  for (final item in src['list']) {
+    final date = DateTime.fromMillisecondsSinceEpoch(item['dt'] * 1000, isUtc: true)
+        .toLocal()
+        .toIso8601String()
+        .substring(0, 10); // YYYY-MM-DD
+    byDay.putIfAbsent(date, () => []).add(item);
+  }
+
+  final forecastDays = byDay.entries.take(3).map((e) {
+    final dayItems = e.value;
+
+    // средние и экстремумы за день
+    final temps = dayItems.map<double>((x) => (x['main']['temp'] as num).toDouble()).toList();
+    final maxTemp = temps.reduce((a, b) => a > b ? a : b);
+    final minTemp = temps.reduce((a, b) => a < b ? a : b);
+    final avgTemp = temps.reduce((a, b) => a + b) / temps.length;
+
+    return ForecastDay(
+      date: e.key,
+      day: Day(
+        maxtempC: maxTemp,
+        mintempC: minTemp,
+        avgtempC: avgTemp,
+        condition: Condition(
+          text: dayItems[0]['weather']?[0]?['description'],
+          icon: 'https://openweathermap.org/img/wn/${dayItems[0]['weather']?[0]?['icon']}@2x.png',
+          code: dayItems[0]['weather']?[0]?['id'] as int?,
+        ),
+      ),
+      hour: dayItems.map((h) {
+        final t = DateTime.fromMillisecondsSinceEpoch(h['dt'] * 1000, isUtc: true).toLocal();
+        return CurrentWeather(
+          timeEpoch: h['dt'] as int?,
+          time: t.toIso8601String(),
+          tempC: (h['main']['temp'] as num).toDouble(),
+          condition: Condition(
+            text: h['weather']?[0]?['description'],
+            icon: 'https://openweathermap.org/img/wn/${h['weather']?[0]?['icon']}@2x.png',
+            code: h['weather']?[0]?['id'] as int?,
+          ),
+          windKph: (h['wind']?['speed'] as num?)?.toDouble(),
+          humidity: h['main']?['humidity'] as int?,
+        );
+      }).toList(),
+    );
+  }).toList();
+
+  return WeatherResponse(
+    location: loc,
+    current: cur,
+    forecast: Forecast(forecastDay: forecastDays),
+  );
 }

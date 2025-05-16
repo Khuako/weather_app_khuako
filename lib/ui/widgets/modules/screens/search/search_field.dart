@@ -11,11 +11,13 @@ class SearchField extends StatefulWidget {
     required this.onDrawerPressed,
     this.changeLocation,
     this.showMenu = false,
+    this.showVoiceInput = false,
   });
 
   final VoidCallback? onDrawerPressed;
   final Function(LatLng loc)? changeLocation;
   final bool showMenu;
+  final bool showVoiceInput;
   @override
   State<SearchField> createState() => _SearchFieldState();
 }
@@ -69,13 +71,14 @@ class _SearchFieldState extends State<SearchField> {
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ),
-              IconButton(
-                icon: Icon(
-                  _isListening ? Icons.mic : Icons.mic_none,
-                  color: Colors.black54,
+              if (widget.showVoiceInput)
+                IconButton(
+                  icon: Icon(
+                    _isListening ? Icons.mic : Icons.mic_none,
+                    color: Colors.black54,
+                  ),
+                  onPressed: _toggleListening,
                 ),
-                onPressed: _toggleListening,
-              ),
             ],
           ),
         ),
@@ -102,7 +105,7 @@ class _SearchFieldState extends State<SearchField> {
                       ? ListView.builder(
                           itemBuilder: (context, index) {
                             return Padding(
-                              padding: const EdgeInsets.only(bottom: 4),
+                              padding: const EdgeInsets.only(bottom: 8),
                               child: GestureDetector(
                                 onTap: () {
                                   searchBloc.mapPoint = LatLng(
@@ -121,6 +124,7 @@ class _SearchFieldState extends State<SearchField> {
                                 },
                                 child: Text(
                                   "${state.autocompleteModel.results?[index].country}, "
+                                  "${state.autocompleteModel.results?[index].admin1}, "
                                   "${state.autocompleteModel.results?[index].name}",
                                   style: const TextStyle(color: Colors.white, fontSize: 18),
                                 ),

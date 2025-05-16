@@ -525,16 +525,460 @@ class RoutePointsCompanion extends UpdateCompanion<RoutePoint> {
   }
 }
 
+class $ClimateDayRecordsTable extends ClimateDayRecords
+    with TableInfo<$ClimateDayRecordsTable, ClimateDayRecord> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ClimateDayRecordsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _cityIdMeta = const VerificationMeta('cityId');
+  @override
+  late final GeneratedColumn<String> cityId = GeneratedColumn<String>(
+      'city_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+      'date', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _tempMinMeta =
+      const VerificationMeta('tempMin');
+  @override
+  late final GeneratedColumn<double> tempMin = GeneratedColumn<double>(
+      'temp_min', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _tempMaxMeta =
+      const VerificationMeta('tempMax');
+  @override
+  late final GeneratedColumn<double> tempMax = GeneratedColumn<double>(
+      'temp_max', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _precipitationMeta =
+      const VerificationMeta('precipitation');
+  @override
+  late final GeneratedColumn<double> precipitation = GeneratedColumn<double>(
+      'precipitation', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _tempAvgMeta =
+      const VerificationMeta('tempAvg');
+  @override
+  late final GeneratedColumn<double> tempAvg = GeneratedColumn<double>(
+      'temp_avg', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _humidityMeta =
+      const VerificationMeta('humidity');
+  @override
+  late final GeneratedColumn<double> humidity = GeneratedColumn<double>(
+      'humidity', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  static const VerificationMeta _windSpeedMeta =
+      const VerificationMeta('windSpeed');
+  @override
+  late final GeneratedColumn<double> windSpeed = GeneratedColumn<double>(
+      'wind_speed', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        cityId,
+        date,
+        tempMin,
+        tempMax,
+        precipitation,
+        tempAvg,
+        humidity,
+        windSpeed
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'climate_day_records';
+  @override
+  VerificationContext validateIntegrity(Insertable<ClimateDayRecord> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('city_id')) {
+      context.handle(_cityIdMeta,
+          cityId.isAcceptableOrUnknown(data['city_id']!, _cityIdMeta));
+    } else if (isInserting) {
+      context.missing(_cityIdMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+          _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('temp_min')) {
+      context.handle(_tempMinMeta,
+          tempMin.isAcceptableOrUnknown(data['temp_min']!, _tempMinMeta));
+    }
+    if (data.containsKey('temp_max')) {
+      context.handle(_tempMaxMeta,
+          tempMax.isAcceptableOrUnknown(data['temp_max']!, _tempMaxMeta));
+    }
+    if (data.containsKey('precipitation')) {
+      context.handle(
+          _precipitationMeta,
+          precipitation.isAcceptableOrUnknown(
+              data['precipitation']!, _precipitationMeta));
+    }
+    if (data.containsKey('temp_avg')) {
+      context.handle(_tempAvgMeta,
+          tempAvg.isAcceptableOrUnknown(data['temp_avg']!, _tempAvgMeta));
+    }
+    if (data.containsKey('humidity')) {
+      context.handle(_humidityMeta,
+          humidity.isAcceptableOrUnknown(data['humidity']!, _humidityMeta));
+    }
+    if (data.containsKey('wind_speed')) {
+      context.handle(_windSpeedMeta,
+          windSpeed.isAcceptableOrUnknown(data['wind_speed']!, _windSpeedMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {cityId, date};
+  @override
+  ClimateDayRecord map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ClimateDayRecord(
+      cityId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}city_id'])!,
+      date: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
+      tempMin: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}temp_min']),
+      tempMax: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}temp_max']),
+      precipitation: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}precipitation']),
+      tempAvg: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}temp_avg']),
+      humidity: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}humidity']),
+      windSpeed: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}wind_speed']),
+    );
+  }
+
+  @override
+  $ClimateDayRecordsTable createAlias(String alias) {
+    return $ClimateDayRecordsTable(attachedDatabase, alias);
+  }
+}
+
+class ClimateDayRecord extends DataClass
+    implements Insertable<ClimateDayRecord> {
+  final String cityId;
+  final DateTime date;
+  final double? tempMin;
+  final double? tempMax;
+  final double? precipitation;
+  final double? tempAvg;
+  final double? humidity;
+  final double? windSpeed;
+  const ClimateDayRecord(
+      {required this.cityId,
+      required this.date,
+      this.tempMin,
+      this.tempMax,
+      this.precipitation,
+      this.tempAvg,
+      this.humidity,
+      this.windSpeed});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['city_id'] = Variable<String>(cityId);
+    map['date'] = Variable<DateTime>(date);
+    if (!nullToAbsent || tempMin != null) {
+      map['temp_min'] = Variable<double>(tempMin);
+    }
+    if (!nullToAbsent || tempMax != null) {
+      map['temp_max'] = Variable<double>(tempMax);
+    }
+    if (!nullToAbsent || precipitation != null) {
+      map['precipitation'] = Variable<double>(precipitation);
+    }
+    if (!nullToAbsent || tempAvg != null) {
+      map['temp_avg'] = Variable<double>(tempAvg);
+    }
+    if (!nullToAbsent || humidity != null) {
+      map['humidity'] = Variable<double>(humidity);
+    }
+    if (!nullToAbsent || windSpeed != null) {
+      map['wind_speed'] = Variable<double>(windSpeed);
+    }
+    return map;
+  }
+
+  ClimateDayRecordsCompanion toCompanion(bool nullToAbsent) {
+    return ClimateDayRecordsCompanion(
+      cityId: Value(cityId),
+      date: Value(date),
+      tempMin: tempMin == null && nullToAbsent
+          ? const Value.absent()
+          : Value(tempMin),
+      tempMax: tempMax == null && nullToAbsent
+          ? const Value.absent()
+          : Value(tempMax),
+      precipitation: precipitation == null && nullToAbsent
+          ? const Value.absent()
+          : Value(precipitation),
+      tempAvg: tempAvg == null && nullToAbsent
+          ? const Value.absent()
+          : Value(tempAvg),
+      humidity: humidity == null && nullToAbsent
+          ? const Value.absent()
+          : Value(humidity),
+      windSpeed: windSpeed == null && nullToAbsent
+          ? const Value.absent()
+          : Value(windSpeed),
+    );
+  }
+
+  factory ClimateDayRecord.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ClimateDayRecord(
+      cityId: serializer.fromJson<String>(json['cityId']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      tempMin: serializer.fromJson<double?>(json['tempMin']),
+      tempMax: serializer.fromJson<double?>(json['tempMax']),
+      precipitation: serializer.fromJson<double?>(json['precipitation']),
+      tempAvg: serializer.fromJson<double?>(json['tempAvg']),
+      humidity: serializer.fromJson<double?>(json['humidity']),
+      windSpeed: serializer.fromJson<double?>(json['windSpeed']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'cityId': serializer.toJson<String>(cityId),
+      'date': serializer.toJson<DateTime>(date),
+      'tempMin': serializer.toJson<double?>(tempMin),
+      'tempMax': serializer.toJson<double?>(tempMax),
+      'precipitation': serializer.toJson<double?>(precipitation),
+      'tempAvg': serializer.toJson<double?>(tempAvg),
+      'humidity': serializer.toJson<double?>(humidity),
+      'windSpeed': serializer.toJson<double?>(windSpeed),
+    };
+  }
+
+  ClimateDayRecord copyWith(
+          {String? cityId,
+          DateTime? date,
+          Value<double?> tempMin = const Value.absent(),
+          Value<double?> tempMax = const Value.absent(),
+          Value<double?> precipitation = const Value.absent(),
+          Value<double?> tempAvg = const Value.absent(),
+          Value<double?> humidity = const Value.absent(),
+          Value<double?> windSpeed = const Value.absent()}) =>
+      ClimateDayRecord(
+        cityId: cityId ?? this.cityId,
+        date: date ?? this.date,
+        tempMin: tempMin.present ? tempMin.value : this.tempMin,
+        tempMax: tempMax.present ? tempMax.value : this.tempMax,
+        precipitation:
+            precipitation.present ? precipitation.value : this.precipitation,
+        tempAvg: tempAvg.present ? tempAvg.value : this.tempAvg,
+        humidity: humidity.present ? humidity.value : this.humidity,
+        windSpeed: windSpeed.present ? windSpeed.value : this.windSpeed,
+      );
+  ClimateDayRecord copyWithCompanion(ClimateDayRecordsCompanion data) {
+    return ClimateDayRecord(
+      cityId: data.cityId.present ? data.cityId.value : this.cityId,
+      date: data.date.present ? data.date.value : this.date,
+      tempMin: data.tempMin.present ? data.tempMin.value : this.tempMin,
+      tempMax: data.tempMax.present ? data.tempMax.value : this.tempMax,
+      precipitation: data.precipitation.present
+          ? data.precipitation.value
+          : this.precipitation,
+      tempAvg: data.tempAvg.present ? data.tempAvg.value : this.tempAvg,
+      humidity: data.humidity.present ? data.humidity.value : this.humidity,
+      windSpeed: data.windSpeed.present ? data.windSpeed.value : this.windSpeed,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ClimateDayRecord(')
+          ..write('cityId: $cityId, ')
+          ..write('date: $date, ')
+          ..write('tempMin: $tempMin, ')
+          ..write('tempMax: $tempMax, ')
+          ..write('precipitation: $precipitation, ')
+          ..write('tempAvg: $tempAvg, ')
+          ..write('humidity: $humidity, ')
+          ..write('windSpeed: $windSpeed')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(cityId, date, tempMin, tempMax, precipitation,
+      tempAvg, humidity, windSpeed);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ClimateDayRecord &&
+          other.cityId == this.cityId &&
+          other.date == this.date &&
+          other.tempMin == this.tempMin &&
+          other.tempMax == this.tempMax &&
+          other.precipitation == this.precipitation &&
+          other.tempAvg == this.tempAvg &&
+          other.humidity == this.humidity &&
+          other.windSpeed == this.windSpeed);
+}
+
+class ClimateDayRecordsCompanion extends UpdateCompanion<ClimateDayRecord> {
+  final Value<String> cityId;
+  final Value<DateTime> date;
+  final Value<double?> tempMin;
+  final Value<double?> tempMax;
+  final Value<double?> precipitation;
+  final Value<double?> tempAvg;
+  final Value<double?> humidity;
+  final Value<double?> windSpeed;
+  final Value<int> rowid;
+  const ClimateDayRecordsCompanion({
+    this.cityId = const Value.absent(),
+    this.date = const Value.absent(),
+    this.tempMin = const Value.absent(),
+    this.tempMax = const Value.absent(),
+    this.precipitation = const Value.absent(),
+    this.tempAvg = const Value.absent(),
+    this.humidity = const Value.absent(),
+    this.windSpeed = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ClimateDayRecordsCompanion.insert({
+    required String cityId,
+    required DateTime date,
+    this.tempMin = const Value.absent(),
+    this.tempMax = const Value.absent(),
+    this.precipitation = const Value.absent(),
+    this.tempAvg = const Value.absent(),
+    this.humidity = const Value.absent(),
+    this.windSpeed = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : cityId = Value(cityId),
+        date = Value(date);
+  static Insertable<ClimateDayRecord> custom({
+    Expression<String>? cityId,
+    Expression<DateTime>? date,
+    Expression<double>? tempMin,
+    Expression<double>? tempMax,
+    Expression<double>? precipitation,
+    Expression<double>? tempAvg,
+    Expression<double>? humidity,
+    Expression<double>? windSpeed,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (cityId != null) 'city_id': cityId,
+      if (date != null) 'date': date,
+      if (tempMin != null) 'temp_min': tempMin,
+      if (tempMax != null) 'temp_max': tempMax,
+      if (precipitation != null) 'precipitation': precipitation,
+      if (tempAvg != null) 'temp_avg': tempAvg,
+      if (humidity != null) 'humidity': humidity,
+      if (windSpeed != null) 'wind_speed': windSpeed,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ClimateDayRecordsCompanion copyWith(
+      {Value<String>? cityId,
+      Value<DateTime>? date,
+      Value<double?>? tempMin,
+      Value<double?>? tempMax,
+      Value<double?>? precipitation,
+      Value<double?>? tempAvg,
+      Value<double?>? humidity,
+      Value<double?>? windSpeed,
+      Value<int>? rowid}) {
+    return ClimateDayRecordsCompanion(
+      cityId: cityId ?? this.cityId,
+      date: date ?? this.date,
+      tempMin: tempMin ?? this.tempMin,
+      tempMax: tempMax ?? this.tempMax,
+      precipitation: precipitation ?? this.precipitation,
+      tempAvg: tempAvg ?? this.tempAvg,
+      humidity: humidity ?? this.humidity,
+      windSpeed: windSpeed ?? this.windSpeed,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (cityId.present) {
+      map['city_id'] = Variable<String>(cityId.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (tempMin.present) {
+      map['temp_min'] = Variable<double>(tempMin.value);
+    }
+    if (tempMax.present) {
+      map['temp_max'] = Variable<double>(tempMax.value);
+    }
+    if (precipitation.present) {
+      map['precipitation'] = Variable<double>(precipitation.value);
+    }
+    if (tempAvg.present) {
+      map['temp_avg'] = Variable<double>(tempAvg.value);
+    }
+    if (humidity.present) {
+      map['humidity'] = Variable<double>(humidity.value);
+    }
+    if (windSpeed.present) {
+      map['wind_speed'] = Variable<double>(windSpeed.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ClimateDayRecordsCompanion(')
+          ..write('cityId: $cityId, ')
+          ..write('date: $date, ')
+          ..write('tempMin: $tempMin, ')
+          ..write('tempMax: $tempMax, ')
+          ..write('precipitation: $precipitation, ')
+          ..write('tempAvg: $tempAvg, ')
+          ..write('humidity: $humidity, ')
+          ..write('windSpeed: $windSpeed, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$LocalDatabase extends GeneratedDatabase {
   _$LocalDatabase(QueryExecutor e) : super(e);
   $LocalDatabaseManager get managers => $LocalDatabaseManager(this);
   late final $RoutesTable routes = $RoutesTable(this);
   late final $RoutePointsTable routePoints = $RoutePointsTable(this);
+  late final $ClimateDayRecordsTable climateDayRecords =
+      $ClimateDayRecordsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [routes, routePoints];
+  List<DatabaseSchemaEntity> get allSchemaEntities =>
+      [routes, routePoints, climateDayRecords];
 }
 
 typedef $$RoutesTableCreateCompanionBuilder = RoutesCompanion Function({
@@ -774,6 +1218,183 @@ class $$RoutePointsTableOrderingComposer
   }
 }
 
+typedef $$ClimateDayRecordsTableCreateCompanionBuilder
+    = ClimateDayRecordsCompanion Function({
+  required String cityId,
+  required DateTime date,
+  Value<double?> tempMin,
+  Value<double?> tempMax,
+  Value<double?> precipitation,
+  Value<double?> tempAvg,
+  Value<double?> humidity,
+  Value<double?> windSpeed,
+  Value<int> rowid,
+});
+typedef $$ClimateDayRecordsTableUpdateCompanionBuilder
+    = ClimateDayRecordsCompanion Function({
+  Value<String> cityId,
+  Value<DateTime> date,
+  Value<double?> tempMin,
+  Value<double?> tempMax,
+  Value<double?> precipitation,
+  Value<double?> tempAvg,
+  Value<double?> humidity,
+  Value<double?> windSpeed,
+  Value<int> rowid,
+});
+
+class $$ClimateDayRecordsTableTableManager extends RootTableManager<
+    _$LocalDatabase,
+    $ClimateDayRecordsTable,
+    ClimateDayRecord,
+    $$ClimateDayRecordsTableFilterComposer,
+    $$ClimateDayRecordsTableOrderingComposer,
+    $$ClimateDayRecordsTableCreateCompanionBuilder,
+    $$ClimateDayRecordsTableUpdateCompanionBuilder> {
+  $$ClimateDayRecordsTableTableManager(
+      _$LocalDatabase db, $ClimateDayRecordsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$ClimateDayRecordsTableFilterComposer(ComposerState(db, table)),
+          orderingComposer: $$ClimateDayRecordsTableOrderingComposer(
+              ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> cityId = const Value.absent(),
+            Value<DateTime> date = const Value.absent(),
+            Value<double?> tempMin = const Value.absent(),
+            Value<double?> tempMax = const Value.absent(),
+            Value<double?> precipitation = const Value.absent(),
+            Value<double?> tempAvg = const Value.absent(),
+            Value<double?> humidity = const Value.absent(),
+            Value<double?> windSpeed = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ClimateDayRecordsCompanion(
+            cityId: cityId,
+            date: date,
+            tempMin: tempMin,
+            tempMax: tempMax,
+            precipitation: precipitation,
+            tempAvg: tempAvg,
+            humidity: humidity,
+            windSpeed: windSpeed,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String cityId,
+            required DateTime date,
+            Value<double?> tempMin = const Value.absent(),
+            Value<double?> tempMax = const Value.absent(),
+            Value<double?> precipitation = const Value.absent(),
+            Value<double?> tempAvg = const Value.absent(),
+            Value<double?> humidity = const Value.absent(),
+            Value<double?> windSpeed = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ClimateDayRecordsCompanion.insert(
+            cityId: cityId,
+            date: date,
+            tempMin: tempMin,
+            tempMax: tempMax,
+            precipitation: precipitation,
+            tempAvg: tempAvg,
+            humidity: humidity,
+            windSpeed: windSpeed,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$ClimateDayRecordsTableFilterComposer
+    extends FilterComposer<_$LocalDatabase, $ClimateDayRecordsTable> {
+  $$ClimateDayRecordsTableFilterComposer(super.$state);
+  ColumnFilters<String> get cityId => $state.composableBuilder(
+      column: $state.table.cityId,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get date => $state.composableBuilder(
+      column: $state.table.date,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<double> get tempMin => $state.composableBuilder(
+      column: $state.table.tempMin,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<double> get tempMax => $state.composableBuilder(
+      column: $state.table.tempMax,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<double> get precipitation => $state.composableBuilder(
+      column: $state.table.precipitation,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<double> get tempAvg => $state.composableBuilder(
+      column: $state.table.tempAvg,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<double> get humidity => $state.composableBuilder(
+      column: $state.table.humidity,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<double> get windSpeed => $state.composableBuilder(
+      column: $state.table.windSpeed,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$ClimateDayRecordsTableOrderingComposer
+    extends OrderingComposer<_$LocalDatabase, $ClimateDayRecordsTable> {
+  $$ClimateDayRecordsTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get cityId => $state.composableBuilder(
+      column: $state.table.cityId,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get date => $state.composableBuilder(
+      column: $state.table.date,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<double> get tempMin => $state.composableBuilder(
+      column: $state.table.tempMin,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<double> get tempMax => $state.composableBuilder(
+      column: $state.table.tempMax,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<double> get precipitation => $state.composableBuilder(
+      column: $state.table.precipitation,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<double> get tempAvg => $state.composableBuilder(
+      column: $state.table.tempAvg,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<double> get humidity => $state.composableBuilder(
+      column: $state.table.humidity,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<double> get windSpeed => $state.composableBuilder(
+      column: $state.table.windSpeed,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
 class $LocalDatabaseManager {
   final _$LocalDatabase _db;
   $LocalDatabaseManager(this._db);
@@ -781,4 +1402,6 @@ class $LocalDatabaseManager {
       $$RoutesTableTableManager(_db, _db.routes);
   $$RoutePointsTableTableManager get routePoints =>
       $$RoutePointsTableTableManager(_db, _db.routePoints);
+  $$ClimateDayRecordsTableTableManager get climateDayRecords =>
+      $$ClimateDayRecordsTableTableManager(_db, _db.climateDayRecords);
 }

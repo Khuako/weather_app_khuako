@@ -15,7 +15,7 @@ Future<Map<String, dynamic>> fetchWeatherData({LatLng? mapPoint, String? cityNam
   try {
     final response = await http.get(
         Uri.parse(
-            'https://weatherapi-com.p.rapidapi.com/current.json?q=${mapPoint != null ? '${mapPoint!.latitude}%2C${mapPoint!.longitude}' : cityName}&lang=ru'),
+            'https://weatherapi-com.p.rapidapi.com/current.json?q=${mapPoint != null ? '${mapPoint.latitude}%2C${mapPoint.longitude}' : cityName}&lang=ru'),
         headers: {
           'X-RapidAPI-Key': weatherApiKey,
           'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com',
@@ -111,10 +111,23 @@ Future<List<DailyWeather>> fetchWeatherForRoute(List<RoutePoint> routePoints) as
 Future<Map<String, dynamic>> fetchWeatherForecastByDays(
     String? city, LatLng? mapPoint, int days) async {
   try {
-    final uri =  Uri.parse('https://api.weatherapi.com/v1/forecast'
-        '.json?key=$forecastKey${mapPoint != null ? '&q=${mapPoint.latitude},${mapPoint
-        .longitude}' : ''}&days=$days&aqi=no&alerts=no');
-    final response = await http.get(uri,
+    // OpenWeather выдаёт прогноз каждые 3 ч на 5 суток (40 точек).
+    // Берём «metric», чтобы остальной код не менять.
+    final url = Uri.https(
+      'api.openweathermap.org',
+      '/data/2.5/forecast',
+      {
+        'lat': mapPoint?.latitude.toString() ?? '',
+        'lon': mapPoint?.longitude.toString() ?? '',
+        'appid': openWeatherMap, // ← у тебя уже есть этот ключ
+        'units': 'metric',
+        'cnt': (days * 8).toString(), // 8 точек в сутки (3 ч × 8 = 24 ч)
+        'lang': 'ru',
+      },
+    );
+
+    final response = await http.get(
+      url,
     );
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -130,7 +143,7 @@ Future<Map<String, dynamic>> fetchWeatherForecastByDays(
 Future<Map<String, dynamic>> fetchWeatherDataByName(String city) async {
   try {
     final response = await http.get(
-        Uri.parse('https://weatherapi-com.p.rapidapi.com/current.json?q=${city}&lang=ru'),
+        Uri.parse('https://weatherapi-com.p.rapidapi.com/current.json?q=$city&lang=ru'),
         headers: {
           'X-RapidAPI-Key': weatherApiKey,
           'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com',
@@ -146,46 +159,39 @@ Future<Map<String, dynamic>> fetchWeatherDataByName(String city) async {
   }
 }
 
-
 Future<void> checkWeatherAndSendNotification() async {
   print("🔍 Проверяем погоду для уведомлений...");
 
-  // Загружаем настройки уведомлений
   final settings = await NotificationSettingsStorage().loadSettings();
 
-  // Определяем текущее время
   final now = DateTime.now();
   final bool isMorning = now.hour >= 6 && now.hour < 12; // 6:00 - 12:00
   final bool isEvening = now.hour >= 18 && now.hour < 23; // 18:00 - 23:00
 
-  // Если выключены утренние и вечерние уведомления — ничего не делаем
-  if (!settings.morningNotification && !settings.eveningNotification &&
+  if (!settings.morningNotification &&
+      !settings.eveningNotification &&
       !settings.severeWeatherAlerts) {
     print("🚫 Все уведомления отключены пользователем.");
     return;
   }
 
-  // Данные о местоположении (можно добавить реальные)
   double latitude = 55.75;
   double longitude = 37.61;
 
-  // Запрос к Open-Meteo API
   final response = await http.get(Uri.parse(
       'https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&daily=temperature_2m_max,precipitation_sum&timezone=auto'));
 
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
 
-    // Получаем прогноз на завтра
     final maxTemp = data["daily"]["temperature_2m_max"][1];
     final precipitation = data["daily"]["precipitation_sum"][1];
 
     String message = "";
     int priority = 0;
 
-    // Логика уведомлений
     if (settings.morningNotification && isMorning) {
-      message = "Доброе утро! Сегодня будет ${maxTemp}°C. ";
+      message = "Доброе утро! Сегодня будет $maxTemp°C. ";
       priority = 0;
       if (precipitation > 5) {
         message += "Ожидаются осадки, возьмите зонт! ☔";
@@ -194,7 +200,7 @@ Future<void> checkWeatherAndSendNotification() async {
     }
 
     if (settings.eveningNotification && isEvening) {
-      message = "Прогноз на завтра: ${maxTemp}°C. ";
+      message = "Прогноз на завтра: $maxTemp°C. ";
       priority = 0;
       if (precipitation > 5) {
         message += "Ожидаются осадки, возьмите зонт! ☔";
@@ -203,11 +209,10 @@ Future<void> checkWeatherAndSendNotification() async {
     }
 
     if (settings.severeWeatherAlerts && precipitation > 20) {
-      message = "⚠ Внимание! Сильные осадки: ${precipitation} мм. Будьте осторожны!";
+      message = "⚠ Внимание! Сильные осадки: $precipitation мм. Будьте осторожны!";
       priority = 2;
     }
 
-    // Отправляем уведомление, если есть текст
     if (message.isNotEmpty) {
       await showWeatherNotification("Погодное уведомление", message, priority);
       print("✅ Уведомление отправлено: $message");
@@ -216,4 +221,3 @@ Future<void> checkWeatherAndSendNotification() async {
     }
   }
 }
-

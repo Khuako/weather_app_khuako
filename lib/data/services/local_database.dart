@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:weather_assistant/bloc/screens/route/all_routes_cubit.dart';
+import 'package:weather_assistant/climate_screen/db/climate_day_records.dart';
 import 'dart:io';
 
 import 'package:weather_assistant/data/repositories/route_repository.dart';
@@ -14,7 +15,7 @@ part 'local_database.g.dart';
 // Таблица маршрутов
 class Routes extends Table {
   IntColumn get id => integer().autoIncrement()(); // ID маршрута
-  TextColumn get name => text()();                // Название маршрута
+  TextColumn get name => text()(); // Название маршрута
 }
 
 // Таблица точек маршрута
@@ -26,15 +27,29 @@ class RoutePoints extends Table {
   RealColumn get longitude => real()();
   DateTimeColumn get arrivalDate => dateTime()();
 }
+
 @LazySingleton()
 // Определяем базу данных
-@DriftDatabase(tables: [Routes, RoutePoints])
+@DriftDatabase(tables: [Routes, RoutePoints, ClimateDayRecords])
 class LocalDatabase extends _$LocalDatabase {
   LocalDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onUpgrade: (migrator, from, to) async {
+          // Если ты точно можешь сбросить старую БД:
+          await migrator.deleteTable('routes');
+          await migrator.deleteTable('route_points');
 
+          // затем пересоздаём все таблицы:
+          await migrator.createAll(); // создает climate_day_records и другие
+        },
+        onCreate: (migrator) async {
+          await migrator.createAll();
+        },
+      );
   // Получение всех маршрутов с точками
   Future<List<Map<String, dynamic>>> getAllRoutesWithPoints() async {
     final query = select(routes).join(
@@ -85,5 +100,5 @@ LazyDatabase _openConnection() {
     return NativeDatabase(file);
   });
 }
-final getIt = GetIt.instance;
 
+final getIt = GetIt.instance;

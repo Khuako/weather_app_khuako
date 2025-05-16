@@ -41,19 +41,19 @@ class WeatherInfoBloc extends Bloc<WeatherInfoEvent, WeatherInfoState> {
           ),
           3,
         );
+        final weather = mapOpenWeather(forecast3days);
         emit(
           WeatherInfoReceivedState(
             weatherModel: data,
             isFavored: isFavored ?? false,
             weatherForecast: forecast,
-            weatherForecast3days: WeatherResponse.fromJson(forecast3days),
+            weatherForecast3days: weather,
             cityName: cityName,
           ),
         );
       } catch (ex) {
         debugPrint(ex.toString());
       }
-
     });
   }
 }

@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:weather_assistant/data/models/weather_model.dart';
 import 'package:intl/intl.dart';
+
 class TemperatureChart extends StatelessWidget {
   final List<CurrentWeather> hourlyData;
 
-  const TemperatureChart({Key? key, required this.hourlyData}) : super(key: key);
+  const TemperatureChart({super.key, required this.hourlyData});
 
   @override
   Widget build(BuildContext context) {
     // Фильтруем данные, оставляя только каждые третьи точки
     final filteredData = hourlyData
         .asMap()
-        .entries
-        .where((entry) => entry.key % 3 == 0) // Интервал в 3 точки
+        .entries // Интервал в 3 точки
         .map((entry) => entry.value)
         .toList();
 
@@ -37,9 +37,9 @@ class TemperatureChart extends StatelessWidget {
                   .asMap()
                   .entries
                   .map((entry) => FlSpot(
-                entry.key.toDouble(),
-                entry.value.tempC ?? 0,
-              ))
+                        entry.key.toDouble(),
+                        entry.value.tempC ?? 0,
+                      ))
                   .toList(),
               isStrokeCapRound: true,
               barWidth: 3,
@@ -69,7 +69,6 @@ class TemperatureChart extends StatelessWidget {
             ),
           ],
           lineTouchData: LineTouchData(
-
             touchTooltipData: LineTouchTooltipData(
               tooltipRoundedRadius: 8,
               getTooltipColor: (touchedSpot) => Colors.white,
@@ -79,8 +78,7 @@ class TemperatureChart extends StatelessWidget {
                 return touchedSpots.map((spot) {
                   final hour = filteredData[spot.x.toInt()];
                   return LineTooltipItem(
-                    '${DateFormat('HH:mm EE', 'ru').format(DateTime.fromMillisecondsSinceEpoch(hour
-                        .timeEpoch! * 1000))}\n${hour.tempC?.floor()}°C',
+                    '${DateFormat('HH:mm EE', 'ru').format(DateTime.fromMillisecondsSinceEpoch(hour.timeEpoch! * 1000))}\n${hour.tempC?.floor()}°C',
                     const TextStyle(color: Color(0xFF212121)),
                   );
                 }).toList();

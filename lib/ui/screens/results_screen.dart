@@ -15,7 +15,7 @@ import 'package:weather_assistant/ui/widgets/core/toast.dart';
 import 'package:weather_assistant/ui/widgets/modules/screens/results/temperature_chart.dart';
 
 class ResultsScreen extends StatefulWidget {
-  const ResultsScreen({Key? key}) : super(key: key);
+  const ResultsScreen({super.key});
 
   @override
   State<ResultsScreen> createState() => _ResultsScreenState();
@@ -228,13 +228,13 @@ class _ResultsScreenState extends State<ResultsScreen> {
                       Row(
                         children: [
                           _AnimatedTabItem(
-                            label: "Сегодня",
+                            label: "Завтра",
                             isSelected: forIndex == 0,
                             onTap: () => setState(() => forIndex = 0),
                           ),
                           const SizedBox(width: 24),
                           _AnimatedTabItem(
-                            label: "Завтра",
+                            label: "Послезавтра",
                             isSelected: forIndex == 1,
                             onTap: () => setState(() => forIndex = 1),
                           ),
@@ -253,7 +253,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 const SizedBox(height: 24),
                 // Почасовой прогноз
                 SizedBox(
-                  height: 136,
+                  height: 172,
                   child: ListView.separated(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       scrollDirection: Axis.horizontal,
@@ -271,7 +271,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                           _ => null,
                         };
                         return _HourlyWeatherCard(
-                          icon: "https:${hour?.condition?.icon}",
+                          icon: "${hour?.condition?.icon}",
                           hour: DateFormat('HH:mm E', 'ru').format(DateTime.parse(hour?.time ??
                               ''
                                   '')),
@@ -302,12 +302,12 @@ class _ResultsScreenState extends State<ResultsScreen> {
                       height: 300,
                       child: TemperatureChart(
                         hourlyData: forIndex == 0
-                            ? forecast[0]?.hour ?? []
+                            ? forecast[0].hour ?? []
                             : forIndex == 1
-                                ? forecast[1]?.hour ?? []
-                                : (forecast[0]?.hour ?? []) +
-                                    (forecast[1]?.hour ?? []) +
-                                    (forecast[2]?.hour ?? []),
+                                ? forecast[1].hour ?? []
+                                : (forecast[0].hour ?? []) +
+                                    (forecast[1].hour ?? []) +
+                                    (forecast[2].hour ?? []),
                       ),
                     ),
                   ],
