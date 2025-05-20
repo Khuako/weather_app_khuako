@@ -10,6 +10,10 @@ class MonthlyExtremesChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (data.isEmpty) {
+      return const Center(
+          child: Text('Нет данных для отображения', style: TextStyle(color: Colors.white70)));
+    }
     final spotsMin = <FlSpot>[];
     final spotsMax = <FlSpot>[];
 

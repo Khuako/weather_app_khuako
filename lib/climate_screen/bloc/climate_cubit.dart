@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:weather_assistant/climate_screen/data/climate_respository.dart';
+import 'package:weather_assistant/climate_screen/model/climate_search_history.dart';
 import 'package:weather_assistant/climate_screen/model/extreme_values.dart';
 import 'package:weather_assistant/climate_screen/model/ideal_month_result.dart';
 import 'package:weather_assistant/climate_screen/model/monthly_climate_stats.dart';
@@ -21,15 +22,17 @@ class ClimateCubit extends Cubit<ClimateState> {
     emit(ClimateLoading());
 
     try {
+      final stationId = await repository.api.getNearestStationId(point.latitude, point.longitude);
+      if (stationId == null) throw Exception('Станция не найдена');
+
       await repository.loadAndCacheCityClimateFromApi(cityId, point.latitude, point.longitude);
+      await repository.addToSearchHistory(cityId, city, stationId);
 
       final monthly = await repository.getMonthlyStats(cityId);
-
       final extremes = await repository.getExtremeValues(cityId);
-
       final ideal = await repository.getIdealMonth(cityId);
-
-      final rating = CityClimateRating.calculateRating(monthly);
+      final rating =
+          CityClimateRating.calculateRatingFromDays(await repository.getAllDaysStats(cityId));
 
       emit(ClimateLoaded(
         cityId: cityId,
@@ -42,5 +45,13 @@ class ClimateCubit extends Cubit<ClimateState> {
     } catch (e) {
       emit(ClimateError('Ошибка загрузки: $e'));
     }
+  }
+
+  Future<List<ClimateSearchHistory>> getSearchHistory() async {
+    return await repository.getSearchHistory();
+  }
+
+  Future<void> clearSearchHistory() async {
+    await repository.clearSearchHistory();
   }
 }

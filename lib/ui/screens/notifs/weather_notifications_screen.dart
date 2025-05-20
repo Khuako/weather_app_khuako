@@ -11,11 +11,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:weather_assistant/ui/widgets/colors.dart';
 
 class WeatherNotificationsScreen extends StatefulWidget {
-  const WeatherNotificationsScreen({Key? key}) : super(key: key);
+  const WeatherNotificationsScreen({super.key});
 
   @override
-  State<WeatherNotificationsScreen> createState() =>
-      _WeatherNotificationsScreenState();
+  State<WeatherNotificationsScreen> createState() => _WeatherNotificationsScreenState();
 }
 
 class _WeatherNotificationsScreenState extends State<WeatherNotificationsScreen> {
@@ -39,7 +38,7 @@ class _WeatherNotificationsScreenState extends State<WeatherNotificationsScreen>
     });
   }
 
-  void _saveSettings()async {
+  void _saveSettings() async {
     final settings = NotificationSettings(
       morningNotification: morningNotification,
       eveningNotification: eveningNotification,
@@ -167,8 +166,8 @@ Future<void> showWeatherNotification(String title, String body, int priority) as
   final FlutterLocalNotificationsPlugin notificationsPlugin = FlutterLocalNotificationsPlugin();
 
   // Регистрируем канал (для Android 8.0+)
-  final AndroidFlutterLocalNotificationsPlugin? androidSettings =
-  notificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+  final AndroidFlutterLocalNotificationsPlugin? androidSettings = notificationsPlugin
+      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
 
   await androidSettings?.createNotificationChannel(channel);
 
@@ -176,8 +175,22 @@ Future<void> showWeatherNotification(String title, String body, int priority) as
     channel.id,
     channel.name,
     channelDescription: channel.description,
-    importance: priority == 2 ? Importance.max : priority == 1 ? Importance.high : Importance.defaultImportance,
-    priority: priority == 2 ? Priority.max : priority == 1 ? Priority.high : Priority.defaultPriority,
+    importance: priority == 2
+        ? Importance.max
+        : priority == 1
+            ? Importance.high
+            : Importance.defaultImportance,
+    priority: priority == 2
+        ? Priority.max
+        : priority == 1
+            ? Priority.high
+            : Priority.defaultPriority,
+    icon: '@mipmap/ic_launcher', // Используем иконку приложения
+
+    color: const Color(0xFF2196F3), // Цвет уведомления
+    enableLights: true,
+    enableVibration: true,
+    playSound: true,
   );
 
   NotificationDetails notificationDetails = NotificationDetails(android: androidDetails);
@@ -191,4 +204,3 @@ Future<void> showWeatherNotification(String title, String body, int priority) as
 
   print("✅ Уведомление отправлено!");
 }
-

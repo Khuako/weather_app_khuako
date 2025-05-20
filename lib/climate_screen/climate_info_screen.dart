@@ -26,7 +26,7 @@ class ClimateInfoScreen extends StatelessWidget {
               final lat = double.parse(coords[0]);
               final lon = double.parse(coords[1]);
               return Text(
-                'Климат-аналитика',
+                'Анализ климата',
                 style: GoogleFonts.rubik(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -34,7 +34,7 @@ class ClimateInfoScreen extends StatelessWidget {
               );
             }
             return Text(
-              'Климат-аналитика',
+              'Анализ климата',
               style: GoogleFonts.rubik(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -63,6 +63,11 @@ class ClimateInfoScreen extends StatelessWidget {
               ),
             );
           } else if (state is ClimateLoaded) {
+            if (state.monthlyStats.isEmpty && state.extremeValues.isEmpty) {
+              return const Center(
+                  child:
+                      Text('Нет данных для отображения', style: TextStyle(color: Colors.white70)));
+            }
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -248,7 +253,7 @@ class ClimateInfoScreen extends StatelessWidget {
                                               const SizedBox(height: 4),
                                               _buildExtremeValueRow(
                                                 'Макс. осадки',
-                                                '${e.maxPrecipitation?.toStringAsFixed(1)} мм',
+                                                '${e.maxPrecipitation?.toStringAsFixed(1) ?? '—'} мм',
                                                 Icons.water_drop,
                                               ),
                                             ],
@@ -267,12 +272,7 @@ class ClimateInfoScreen extends StatelessWidget {
               ),
             );
           }
-          return const Center(
-            child: Text(
-              'Загрузка данных...',
-              style: TextStyle(color: Colors.white),
-            ),
-          );
+          return const SizedBox.shrink();
         },
       ),
     );

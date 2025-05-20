@@ -16,7 +16,7 @@ class SearchInfoBloc extends Bloc<SearchInfoEvent, SearchInfoState> {
     on<TextControllerEvent>((event, emit) async {
       text = event.text;
       emit(SearchInfoLoading());
-      if (text.isNotEmpty && text.length>2) {
+      if (text.isNotEmpty && text.length > 1) {
         var data = await fetchGeoData(text);
         if (data.isNotEmpty) {
           var result = AutocompleteModel.fromJson(data);
@@ -24,6 +24,8 @@ class SearchInfoBloc extends Bloc<SearchInfoEvent, SearchInfoState> {
             emit(SearchInfoFetched(autocompleteModel: result));
           }
         }
+      } else {
+        emit(SearchInfoInitial());
       }
     });
   }

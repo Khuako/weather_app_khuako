@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
@@ -26,6 +28,7 @@ void main() async {
   scheduleWeatherCheck();
   const AndroidInitializationSettings androidSettings =
       AndroidInitializationSettings('@mipmap/ic_launcher');
+  checkWeatherAndSendNotification();
   const DarwinInitializationSettings iosSettings = DarwinInitializationSettings();
 
   const InitializationSettings initSettings = InitializationSettings(
@@ -94,9 +97,14 @@ void callbackDispatcher() {
 }
 
 void scheduleWeatherCheck() {
-  Workmanager().registerPeriodicTask(
-    "daily_weather_check",
-    "check_weather",
-    frequency: const Duration(hours: 12), // Утром и вечером
-  );
+  if (Platform.isAndroid) {
+    Workmanager().registerPeriodicTask(
+      "daily_weather_check",
+      "check_weather",
+      frequency: const Duration(hours: 12),
+    );
+  } else {
+    Workmanager().registerOneOffTask("daily_weather_check", "check_weather",
+        existingWorkPolicy: ExistingWorkPolicy.append);
+  }
 }

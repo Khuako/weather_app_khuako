@@ -536,11 +536,16 @@ class $ClimateDayRecordsTable extends ClimateDayRecords
   late final GeneratedColumn<String> cityId = GeneratedColumn<String>(
       'city_id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  static const VerificationMeta _monthMeta = const VerificationMeta('month');
   @override
-  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
-      'date', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  late final GeneratedColumn<String> month = GeneratedColumn<String>(
+      'month', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _yearMeta = const VerificationMeta('year');
+  @override
+  late final GeneratedColumn<String> year = GeneratedColumn<String>(
+      'year', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _tempMinMeta =
       const VerificationMeta('tempMin');
   @override
@@ -580,7 +585,8 @@ class $ClimateDayRecordsTable extends ClimateDayRecords
   @override
   List<GeneratedColumn> get $columns => [
         cityId,
-        date,
+        month,
+        year,
         tempMin,
         tempMax,
         precipitation,
@@ -604,11 +610,17 @@ class $ClimateDayRecordsTable extends ClimateDayRecords
     } else if (isInserting) {
       context.missing(_cityIdMeta);
     }
-    if (data.containsKey('date')) {
+    if (data.containsKey('month')) {
       context.handle(
-          _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
+          _monthMeta, month.isAcceptableOrUnknown(data['month']!, _monthMeta));
     } else if (isInserting) {
-      context.missing(_dateMeta);
+      context.missing(_monthMeta);
+    }
+    if (data.containsKey('year')) {
+      context.handle(
+          _yearMeta, year.isAcceptableOrUnknown(data['year']!, _yearMeta));
+    } else if (isInserting) {
+      context.missing(_yearMeta);
     }
     if (data.containsKey('temp_min')) {
       context.handle(_tempMinMeta,
@@ -640,15 +652,17 @@ class $ClimateDayRecordsTable extends ClimateDayRecords
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {cityId, date};
+  Set<GeneratedColumn> get $primaryKey => {cityId, month, year};
   @override
   ClimateDayRecord map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ClimateDayRecord(
       cityId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}city_id'])!,
-      date: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
+      month: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}month'])!,
+      year: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}year'])!,
       tempMin: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}temp_min']),
       tempMax: attachedDatabase.typeMapping
@@ -673,7 +687,8 @@ class $ClimateDayRecordsTable extends ClimateDayRecords
 class ClimateDayRecord extends DataClass
     implements Insertable<ClimateDayRecord> {
   final String cityId;
-  final DateTime date;
+  final String month;
+  final String year;
   final double? tempMin;
   final double? tempMax;
   final double? precipitation;
@@ -682,7 +697,8 @@ class ClimateDayRecord extends DataClass
   final double? windSpeed;
   const ClimateDayRecord(
       {required this.cityId,
-      required this.date,
+      required this.month,
+      required this.year,
       this.tempMin,
       this.tempMax,
       this.precipitation,
@@ -693,7 +709,8 @@ class ClimateDayRecord extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['city_id'] = Variable<String>(cityId);
-    map['date'] = Variable<DateTime>(date);
+    map['month'] = Variable<String>(month);
+    map['year'] = Variable<String>(year);
     if (!nullToAbsent || tempMin != null) {
       map['temp_min'] = Variable<double>(tempMin);
     }
@@ -718,7 +735,8 @@ class ClimateDayRecord extends DataClass
   ClimateDayRecordsCompanion toCompanion(bool nullToAbsent) {
     return ClimateDayRecordsCompanion(
       cityId: Value(cityId),
-      date: Value(date),
+      month: Value(month),
+      year: Value(year),
       tempMin: tempMin == null && nullToAbsent
           ? const Value.absent()
           : Value(tempMin),
@@ -745,7 +763,8 @@ class ClimateDayRecord extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ClimateDayRecord(
       cityId: serializer.fromJson<String>(json['cityId']),
-      date: serializer.fromJson<DateTime>(json['date']),
+      month: serializer.fromJson<String>(json['month']),
+      year: serializer.fromJson<String>(json['year']),
       tempMin: serializer.fromJson<double?>(json['tempMin']),
       tempMax: serializer.fromJson<double?>(json['tempMax']),
       precipitation: serializer.fromJson<double?>(json['precipitation']),
@@ -759,7 +778,8 @@ class ClimateDayRecord extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'cityId': serializer.toJson<String>(cityId),
-      'date': serializer.toJson<DateTime>(date),
+      'month': serializer.toJson<String>(month),
+      'year': serializer.toJson<String>(year),
       'tempMin': serializer.toJson<double?>(tempMin),
       'tempMax': serializer.toJson<double?>(tempMax),
       'precipitation': serializer.toJson<double?>(precipitation),
@@ -771,7 +791,8 @@ class ClimateDayRecord extends DataClass
 
   ClimateDayRecord copyWith(
           {String? cityId,
-          DateTime? date,
+          String? month,
+          String? year,
           Value<double?> tempMin = const Value.absent(),
           Value<double?> tempMax = const Value.absent(),
           Value<double?> precipitation = const Value.absent(),
@@ -780,7 +801,8 @@ class ClimateDayRecord extends DataClass
           Value<double?> windSpeed = const Value.absent()}) =>
       ClimateDayRecord(
         cityId: cityId ?? this.cityId,
-        date: date ?? this.date,
+        month: month ?? this.month,
+        year: year ?? this.year,
         tempMin: tempMin.present ? tempMin.value : this.tempMin,
         tempMax: tempMax.present ? tempMax.value : this.tempMax,
         precipitation:
@@ -792,7 +814,8 @@ class ClimateDayRecord extends DataClass
   ClimateDayRecord copyWithCompanion(ClimateDayRecordsCompanion data) {
     return ClimateDayRecord(
       cityId: data.cityId.present ? data.cityId.value : this.cityId,
-      date: data.date.present ? data.date.value : this.date,
+      month: data.month.present ? data.month.value : this.month,
+      year: data.year.present ? data.year.value : this.year,
       tempMin: data.tempMin.present ? data.tempMin.value : this.tempMin,
       tempMax: data.tempMax.present ? data.tempMax.value : this.tempMax,
       precipitation: data.precipitation.present
@@ -808,7 +831,8 @@ class ClimateDayRecord extends DataClass
   String toString() {
     return (StringBuffer('ClimateDayRecord(')
           ..write('cityId: $cityId, ')
-          ..write('date: $date, ')
+          ..write('month: $month, ')
+          ..write('year: $year, ')
           ..write('tempMin: $tempMin, ')
           ..write('tempMax: $tempMax, ')
           ..write('precipitation: $precipitation, ')
@@ -820,14 +844,15 @@ class ClimateDayRecord extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(cityId, date, tempMin, tempMax, precipitation,
-      tempAvg, humidity, windSpeed);
+  int get hashCode => Object.hash(cityId, month, year, tempMin, tempMax,
+      precipitation, tempAvg, humidity, windSpeed);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ClimateDayRecord &&
           other.cityId == this.cityId &&
-          other.date == this.date &&
+          other.month == this.month &&
+          other.year == this.year &&
           other.tempMin == this.tempMin &&
           other.tempMax == this.tempMax &&
           other.precipitation == this.precipitation &&
@@ -838,7 +863,8 @@ class ClimateDayRecord extends DataClass
 
 class ClimateDayRecordsCompanion extends UpdateCompanion<ClimateDayRecord> {
   final Value<String> cityId;
-  final Value<DateTime> date;
+  final Value<String> month;
+  final Value<String> year;
   final Value<double?> tempMin;
   final Value<double?> tempMax;
   final Value<double?> precipitation;
@@ -848,7 +874,8 @@ class ClimateDayRecordsCompanion extends UpdateCompanion<ClimateDayRecord> {
   final Value<int> rowid;
   const ClimateDayRecordsCompanion({
     this.cityId = const Value.absent(),
-    this.date = const Value.absent(),
+    this.month = const Value.absent(),
+    this.year = const Value.absent(),
     this.tempMin = const Value.absent(),
     this.tempMax = const Value.absent(),
     this.precipitation = const Value.absent(),
@@ -859,7 +886,8 @@ class ClimateDayRecordsCompanion extends UpdateCompanion<ClimateDayRecord> {
   });
   ClimateDayRecordsCompanion.insert({
     required String cityId,
-    required DateTime date,
+    required String month,
+    required String year,
     this.tempMin = const Value.absent(),
     this.tempMax = const Value.absent(),
     this.precipitation = const Value.absent(),
@@ -868,10 +896,12 @@ class ClimateDayRecordsCompanion extends UpdateCompanion<ClimateDayRecord> {
     this.windSpeed = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : cityId = Value(cityId),
-        date = Value(date);
+        month = Value(month),
+        year = Value(year);
   static Insertable<ClimateDayRecord> custom({
     Expression<String>? cityId,
-    Expression<DateTime>? date,
+    Expression<String>? month,
+    Expression<String>? year,
     Expression<double>? tempMin,
     Expression<double>? tempMax,
     Expression<double>? precipitation,
@@ -882,7 +912,8 @@ class ClimateDayRecordsCompanion extends UpdateCompanion<ClimateDayRecord> {
   }) {
     return RawValuesInsertable({
       if (cityId != null) 'city_id': cityId,
-      if (date != null) 'date': date,
+      if (month != null) 'month': month,
+      if (year != null) 'year': year,
       if (tempMin != null) 'temp_min': tempMin,
       if (tempMax != null) 'temp_max': tempMax,
       if (precipitation != null) 'precipitation': precipitation,
@@ -895,7 +926,8 @@ class ClimateDayRecordsCompanion extends UpdateCompanion<ClimateDayRecord> {
 
   ClimateDayRecordsCompanion copyWith(
       {Value<String>? cityId,
-      Value<DateTime>? date,
+      Value<String>? month,
+      Value<String>? year,
       Value<double?>? tempMin,
       Value<double?>? tempMax,
       Value<double?>? precipitation,
@@ -905,7 +937,8 @@ class ClimateDayRecordsCompanion extends UpdateCompanion<ClimateDayRecord> {
       Value<int>? rowid}) {
     return ClimateDayRecordsCompanion(
       cityId: cityId ?? this.cityId,
-      date: date ?? this.date,
+      month: month ?? this.month,
+      year: year ?? this.year,
       tempMin: tempMin ?? this.tempMin,
       tempMax: tempMax ?? this.tempMax,
       precipitation: precipitation ?? this.precipitation,
@@ -922,8 +955,11 @@ class ClimateDayRecordsCompanion extends UpdateCompanion<ClimateDayRecord> {
     if (cityId.present) {
       map['city_id'] = Variable<String>(cityId.value);
     }
-    if (date.present) {
-      map['date'] = Variable<DateTime>(date.value);
+    if (month.present) {
+      map['month'] = Variable<String>(month.value);
+    }
+    if (year.present) {
+      map['year'] = Variable<String>(year.value);
     }
     if (tempMin.present) {
       map['temp_min'] = Variable<double>(tempMin.value);
@@ -953,7 +989,8 @@ class ClimateDayRecordsCompanion extends UpdateCompanion<ClimateDayRecord> {
   String toString() {
     return (StringBuffer('ClimateDayRecordsCompanion(')
           ..write('cityId: $cityId, ')
-          ..write('date: $date, ')
+          ..write('month: $month, ')
+          ..write('year: $year, ')
           ..write('tempMin: $tempMin, ')
           ..write('tempMax: $tempMax, ')
           ..write('precipitation: $precipitation, ')
@@ -1221,7 +1258,8 @@ class $$RoutePointsTableOrderingComposer
 typedef $$ClimateDayRecordsTableCreateCompanionBuilder
     = ClimateDayRecordsCompanion Function({
   required String cityId,
-  required DateTime date,
+  required String month,
+  required String year,
   Value<double?> tempMin,
   Value<double?> tempMax,
   Value<double?> precipitation,
@@ -1233,7 +1271,8 @@ typedef $$ClimateDayRecordsTableCreateCompanionBuilder
 typedef $$ClimateDayRecordsTableUpdateCompanionBuilder
     = ClimateDayRecordsCompanion Function({
   Value<String> cityId,
-  Value<DateTime> date,
+  Value<String> month,
+  Value<String> year,
   Value<double?> tempMin,
   Value<double?> tempMax,
   Value<double?> precipitation,
@@ -1262,7 +1301,8 @@ class $$ClimateDayRecordsTableTableManager extends RootTableManager<
               ComposerState(db, table)),
           updateCompanionCallback: ({
             Value<String> cityId = const Value.absent(),
-            Value<DateTime> date = const Value.absent(),
+            Value<String> month = const Value.absent(),
+            Value<String> year = const Value.absent(),
             Value<double?> tempMin = const Value.absent(),
             Value<double?> tempMax = const Value.absent(),
             Value<double?> precipitation = const Value.absent(),
@@ -1273,7 +1313,8 @@ class $$ClimateDayRecordsTableTableManager extends RootTableManager<
           }) =>
               ClimateDayRecordsCompanion(
             cityId: cityId,
-            date: date,
+            month: month,
+            year: year,
             tempMin: tempMin,
             tempMax: tempMax,
             precipitation: precipitation,
@@ -1284,7 +1325,8 @@ class $$ClimateDayRecordsTableTableManager extends RootTableManager<
           ),
           createCompanionCallback: ({
             required String cityId,
-            required DateTime date,
+            required String month,
+            required String year,
             Value<double?> tempMin = const Value.absent(),
             Value<double?> tempMax = const Value.absent(),
             Value<double?> precipitation = const Value.absent(),
@@ -1295,7 +1337,8 @@ class $$ClimateDayRecordsTableTableManager extends RootTableManager<
           }) =>
               ClimateDayRecordsCompanion.insert(
             cityId: cityId,
-            date: date,
+            month: month,
+            year: year,
             tempMin: tempMin,
             tempMax: tempMax,
             precipitation: precipitation,
@@ -1315,8 +1358,13 @@ class $$ClimateDayRecordsTableFilterComposer
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
-  ColumnFilters<DateTime> get date => $state.composableBuilder(
-      column: $state.table.date,
+  ColumnFilters<String> get month => $state.composableBuilder(
+      column: $state.table.month,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get year => $state.composableBuilder(
+      column: $state.table.year,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
@@ -1359,8 +1407,13 @@ class $$ClimateDayRecordsTableOrderingComposer
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 
-  ColumnOrderings<DateTime> get date => $state.composableBuilder(
-      column: $state.table.date,
+  ColumnOrderings<String> get month => $state.composableBuilder(
+      column: $state.table.month,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get year => $state.composableBuilder(
+      column: $state.table.year,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 

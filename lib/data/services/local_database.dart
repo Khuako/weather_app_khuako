@@ -35,19 +35,16 @@ class LocalDatabase extends _$LocalDatabase {
   LocalDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onUpgrade: (migrator, from, to) async {
-          // Если ты точно можешь сбросить старую БД:
-          await migrator.deleteTable('routes');
-          await migrator.deleteTable('route_points');
-
-          // затем пересоздаём все таблицы:
-          await migrator.createAll(); // создает climate_day_records и другие
+        onCreate: (m) async {
+          await m.createAll();
         },
-        onCreate: (migrator) async {
-          await migrator.createAll();
+        onUpgrade: (m, from, to) async {
+          // Принудительно пересоздать таблицу
+          await m.deleteTable('climate_day_records');
+          await m.createAll();
         },
       );
   // Получение всех маршрутов с точками

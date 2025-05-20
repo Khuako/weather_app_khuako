@@ -11,6 +11,10 @@ class MonthlyTemperatureChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (data.isEmpty) {
+      return const Center(
+          child: Text('Нет данных для отображения', style: TextStyle(color: Colors.white70)));
+    }
     final spots = <FlSpot>[];
 
     for (int i = 0; i < data.length; i++) {

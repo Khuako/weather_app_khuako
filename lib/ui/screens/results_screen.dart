@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -149,45 +151,14 @@ class _ResultsScreenState extends State<ResultsScreen> {
                             Row(
                               children: [
                                 Text(
-                                  "Ощущается как: ${city?.feelslikeC?.floor()}°C",
+                                  "Ощущается как: ${"${getFeelsLikeTemperature(
+                                    temperatureC: city?.tempC ?? 0,
+                                    windKph: city?.windKph ?? 0,
+                                    humidityPercent: city?.humidity?.toDouble() ?? 0,
+                                  ).round()}°C"}",
                                   style: GoogleFonts.rubik(
                                     color: Colors.white70,
                                     fontSize: 14,
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                GestureDetector(
-                                  onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        backgroundColor: const Color(0xFF212121),
-                                        title: const Text(
-                                          'Как считается?',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        content: const Text(
-                                          'Формула ощущения температуры учитывает:\n\n'
-                                          '🌬 Скорость ветра\n'
-                                          '💧 Влажность воздуха\n'
-                                          '☀️ Температуру окружающей среды\n\n'
-                                          'Примерная формула:\n'
-                                          'T_ощущ = T + 0.33×Влажность - 0.7×Ветер - 4.00',
-                                          style: TextStyle(fontSize: 14, color: Colors.white),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () => Navigator.of(context).pop(),
-                                            child: const Text('Понятно'),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                  child: const Icon(
-                                    Icons.help_outline,
-                                    size: 18,
-                                    color: Colors.white54,
                                   ),
                                 ),
                               ],
@@ -228,13 +199,13 @@ class _ResultsScreenState extends State<ResultsScreen> {
                       Row(
                         children: [
                           _AnimatedTabItem(
-                            label: "Завтра",
+                            label: "Сегодня",
                             isSelected: forIndex == 0,
                             onTap: () => setState(() => forIndex = 0),
                           ),
                           const SizedBox(width: 24),
                           _AnimatedTabItem(
-                            label: "Послезавтра",
+                            label: "Завтра",
                             isSelected: forIndex == 1,
                             onTap: () => setState(() => forIndex = 1),
                           ),
@@ -443,6 +414,61 @@ class _HourlyWeatherCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+double calculateWindChill({
+  required double temperatureC,
+  required double windKph,
+}) {
+  final v = windKph;
+  final t = temperatureC;
+  return 13.12 + 0.6215 * t - 11.37 * pow(v, 0.16) + 0.3965 * t * pow(v, 0.16);
+}
+
+double calculateHeatIndex({
+  required double temperatureC,
+  required double humidityPercent,
+}) {
+  final T = temperatureC;
+  final RH = humidityPercent;
+
+  const c1 = -8.78469475556;
+  const c2 = 1.61139411;
+  const c3 = 2.33854883889;
+  const c4 = -0.14611605;
+  const c5 = -0.012308094;
+  const c6 = -0.0164248277778;
+  const c7 = 0.002211732;
+  const c8 = 0.00072546;
+  const c9 = -0.000003582;
+
+  return c1 +
+      c2 * T +
+      c3 * RH +
+      c4 * T * RH +
+      c5 * T * T +
+      c6 * RH * RH +
+      c7 * T * T * RH +
+      c8 * T * RH * RH +
+      c9 * T * T * RH * RH;
+}
+
+double getFeelsLikeTemperature({
+  required double temperatureC,
+  required double windKph,
+  required double humidityPercent,
+}) {
+  if (temperatureC >= 27) {
+    return calculateHeatIndex(
+      temperatureC: temperatureC,
+      humidityPercent: humidityPercent,
+    );
+  } else {
+    return calculateWindChill(
+      temperatureC: temperatureC,
+      windKph: windKph,
     );
   }
 }
