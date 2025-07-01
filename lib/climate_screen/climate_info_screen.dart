@@ -230,7 +230,7 @@ class ClimateInfoScreen extends StatelessWidget {
                                             ),
                                           ),
                                         ),
-                                        const SizedBox(width: 16),
+                                        const SizedBox(width: 8),
                                         Expanded(
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -286,7 +286,7 @@ class ClimateInfoScreen extends StatelessWidget {
           color: Colors.white70,
           size: 16,
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 5),
         Text(
           label,
           style: GoogleFonts.rubik(

@@ -36,11 +36,11 @@ class RouteDetailScreen extends StatefulWidget {
 
 class _RouteDetailScreenState extends State<RouteDetailScreen> {
   Future<void> _generatePdf(
-      BuildContext context,
-      List<RoutePoint> points,
-      String title,
-      List<DailyWeather> weatherList,
-      ) async {
+    BuildContext context,
+    List<RoutePoint> points,
+    String title,
+    List<DailyWeather> weatherList,
+  ) async {
     final pdf = pw.Document();
 
     // Загружаем шрифт с поддержкой кириллицы
@@ -82,19 +82,21 @@ class _RouteDetailScreenState extends State<RouteDetailScreen> {
                       style: pw.TextStyle(font: font, fontSize: 14, color: PdfColors.grey600),
                     ),
                     pw.SizedBox(height: 10),
-
                     if (i < weatherList.length)
                       pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.center,
                         children: [
-                          _buildWeatherRow("Макс. температура:", "${weatherList[i].maxTemp}°C", font),
-                          _buildWeatherRow("Мин. температура:", "${weatherList[i].minTemp}°C", font),
+                          _buildWeatherRow(
+                              "Макс. температура:", "${weatherList[i].maxTemp}°C", font),
+                          _buildWeatherRow(
+                              "Мин. температура:", "${weatherList[i].minTemp}°C", font),
                           _buildWeatherRow("Осадки:", "${weatherList[i].precipitation} мм", font),
                           _buildWeatherRow("Ветер:", "${weatherList[i].wind} км/ч", font),
-                          if(weatherList[i].uv!=null)
-                          _buildWeatherRow("УФ (макс):", "${weatherList[i].uv}", font),
+                          if (weatherList[i].uv != null)
+                            _buildWeatherRow("УФ (макс):", "${weatherList[i].uv}", font),
                           if (!weatherList[i].date.isBefore(DateTime.now()))
-                            _buildWeatherRow("Вероятность осадков:", "${weatherList[i].precipitationProbability}%", font),
+                            _buildWeatherRow("Вероятность осадков:",
+                                "${weatherList[i].precipitationProbability}%", font),
                         ],
                       ),
                   ],
@@ -120,15 +122,20 @@ class _RouteDetailScreenState extends State<RouteDetailScreen> {
       padding: const pw.EdgeInsets.symmetric(vertical: 2),
       child: pw.Row(
         children: [
-          pw.Text(label, style: pw.TextStyle(font: font, fontSize: 18, color: PdfColors.black,
-              fontWeight: pw.FontWeight.bold)),
+          pw.Text(label,
+              style: pw.TextStyle(
+                  font: font,
+                  fontSize: 18,
+                  color: PdfColors.black,
+                  fontWeight: pw.FontWeight.bold)),
           pw.SizedBox(width: 8),
-          pw.Text(value, style: pw.TextStyle(font: font, fontSize: 16, fontWeight: pw.FontWeight
-              .bold)),
+          pw.Text(value,
+              style: pw.TextStyle(font: font, fontSize: 16, fontWeight: pw.FontWeight.bold)),
         ],
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -321,18 +328,18 @@ class _RouteDetailScreenState extends State<RouteDetailScreen> {
                                   value: "${weather.precipitation} мм",
                                   icon: Icons.water_drop,
                                 ),
-                                if(weather.wind != null)
-                                _WeatherInfoWithIcon(
-                                  label: "Ветер",
-                                  value: "${weather.wind} км/ч",
-                                  icon: Icons.air_outlined,
-                                ),
-                                if(weather.uv != null)
-                                _WeatherInfoWithIcon(
-                                  label: "УФ (макс)",
-                                  value: "${weather.uv!.toInt()}",
-                                  icon: Icons.sunny,
-                                ),
+                                if (weather.wind != null)
+                                  _WeatherInfoWithIcon(
+                                    label: "Ветер",
+                                    value: "${weather.wind} км/ч",
+                                    icon: Icons.air_outlined,
+                                  ),
+                                if (weather.uv != null)
+                                  _WeatherInfoWithIcon(
+                                    label: "УФ (макс)",
+                                    value: "${weather.uv!.toInt()}",
+                                    icon: Icons.sunny,
+                                  ),
                               ],
                             ),
                             const SizedBox(height: 8),
@@ -390,11 +397,16 @@ class _WeatherInfoWithIcon extends StatelessWidget {
                 size: 16,
               ),
               const SizedBox(width: 4),
-              Text(
-                label,
-                style: GoogleFonts.rubik(
-                  color: Colors.white70,
-                  fontSize: 14,
+              Flexible(
+                child: Text(
+                  label,
+                  style: GoogleFonts.rubik(
+                    color: Colors.white70,
+                    fontSize: 14,
+                  ),
+                  softWrap: true,
+                  overflow: TextOverflow.visible,
+                  textAlign: TextAlign.center,
                 ),
               ),
             ],
