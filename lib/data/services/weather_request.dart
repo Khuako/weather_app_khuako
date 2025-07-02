@@ -16,11 +16,8 @@ Future<Map<String, dynamic>> fetchWeatherData({LatLng? mapPoint, String? cityNam
   try {
     final response = await retryGet(
       Uri.parse(
-          'https://weatherapi-com.p.rapidapi.com/current.json?q=${mapPoint != null ? '${mapPoint.latitude}%2C${mapPoint.longitude}' : cityName}&lang=ru'),
-      headers: {
-        'X-RapidAPI-Key': weatherApiKey,
-        'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com',
-      },
+          'https://api.weatherapi.com/v1/current.json?key=${weatherApiKey}&q=${mapPoint != null ? ''
+              '${mapPoint.latitude}%2C${mapPoint.longitude}' : cityName}&lang=ru'),
     );
     if (response.statusCode == 200) {
       final decodedBody = utf8.decode(response.bodyBytes);
@@ -141,11 +138,7 @@ Future<Map<String, dynamic>> fetchWeatherForecastByDays(
 Future<Map<String, dynamic>> fetchWeatherDataByName(String city) async {
   try {
     final response = await retryGet(
-      Uri.parse('https://weatherapi-com.p.rapidapi.com/current.json?q=$city&lang=ru'),
-      headers: {
-        'X-RapidAPI-Key': weatherApiKey,
-        'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com',
-      },
+      Uri.parse('https://api.weatherapi.com/v1/current.json?key=${weatherApiKey}&$city&lang=ru'),
     );
     if (response.statusCode == 200) {
       return json.decode(response.body);

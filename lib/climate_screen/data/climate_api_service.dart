@@ -7,7 +7,7 @@ import '../model/climate_day_record_model.dart';
 
 @LazySingleton()
 class ClimateApiService {
-  final String host = 'meteostat.p.rapidapi.com';
+  final String host = 'api.meteostat.net';
 
   // In-memory кеш для stationId
   final Map<String, String> _stationCache = {};
