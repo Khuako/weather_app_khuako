@@ -94,7 +94,6 @@ class _ResultsScreenState extends State<ResultsScreen> {
                         ],
                       ),
                       const SizedBox(height: 24),
-                      // Карточка основной информации
                       Substrate(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 25,

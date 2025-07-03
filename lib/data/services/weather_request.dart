@@ -16,7 +16,7 @@ Future<Map<String, dynamic>> fetchWeatherData({LatLng? mapPoint, String? cityNam
   try {
     final response = await retryGet(
       Uri.parse(
-          'https://api.weatherapi.com/v1/current.json?key=${weatherApiKey}&q=${mapPoint != null ? ''
+          'https://api.weatherapi.com/v1/current.json?key=$weatherApiKey&q=${mapPoint != null ? ''
               '${mapPoint.latitude}%2C${mapPoint.longitude}' : cityName}&lang=ru'),
     );
     if (response.statusCode == 200) {
@@ -55,7 +55,6 @@ Future<List<DailyWeather>> fetchWeatherForRoute(List<RoutePoint> routePoints) as
     final String formattedDate = point.arrivalDate.toIso8601String().split('T')[0];
 
     Uri url;
-    // Проверяем, прошлая дата или будущая
     if (point.arrivalDate.isBefore(DateTime.now()) && point.arrivalDate.day != DateTime.now().day) {
       url = Uri.parse(
         'https://archive-api.open-meteo.com/v1/archive'
@@ -86,14 +85,12 @@ Future<List<DailyWeather>> fetchWeatherForRoute(List<RoutePoint> routePoints) as
       if (response.statusCode == 200) {
         final Map<String, dynamic> apiResponse = jsonDecode(response.body);
 
-        // Преобразуем данные из JSON в объект DailyWeather
         final List<DailyWeather> dailyData = DailyWeather.fromJsonList(
           apiResponse,
           point.locationName,
         );
 
         if (dailyData.isNotEmpty) {
-          // Берём только первый объект, так как запрос для одной даты
           weatherData.add(dailyData.first);
         }
       } else {
@@ -138,7 +135,7 @@ Future<Map<String, dynamic>> fetchWeatherForecastByDays(
 Future<Map<String, dynamic>> fetchWeatherDataByName(String city) async {
   try {
     final response = await retryGet(
-      Uri.parse('https://api.weatherapi.com/v1/current.json?key=${weatherApiKey}&$city&lang=ru'),
+      Uri.parse('https://api.weatherapi.com/v1/current.json?key=$weatherApiKey&$city&lang=ru'),
     );
     if (response.statusCode == 200) {
       return json.decode(response.body);

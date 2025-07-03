@@ -2,11 +2,11 @@ import 'climate_day_record_model.dart';
 
 class CityClimateRating {
   final String cityId;
-  final double temperatureScore; // 0-100
-  final double precipitationScore; // 0-100
-  final double seasonalityScore; // 0-100
-  final double comfortScore; // 0-100
-  final double overallScore; // 0-100
+  final double temperatureScore;
+  final double precipitationScore;
+  final double seasonalityScore;
+  final double comfortScore;
+  final double overallScore;
 
   CityClimateRating({
     required this.cityId,
@@ -17,7 +17,6 @@ class CityClimateRating {
     required this.overallScore,
   });
 
-  // Новый метод для расчета рейтинга по всем дням
   static CityClimateRating calculateRatingFromDays(List<ClimateDayRecordModel> days) {
     if (days.isEmpty) {
       return CityClimateRating(
@@ -47,8 +46,13 @@ class CityClimateRating {
   static double _calculateTemperatureScore(List<ClimateDayRecordModel> days) {
     if (days.isEmpty) return 0;
     double score = 0;
+    int validDays = 0;
     for (var day in days) {
-      final avgTemp = ((day.tempMin ?? 0) + (day.tempMax ?? 0)) / 2;
+      if (day.tempMin == null || day.tempMax == null || day.tempMin == 0 || day.tempMax == 0) {
+        continue;
+      }
+      validDays++;
+      final avgTemp = (day.tempMin! + day.tempMax!) / 2;
       if (avgTemp >= 10 && avgTemp <= 28) {
         score += 100;
       } else if (avgTemp >= 5 && avgTemp <= 32) {
@@ -59,7 +63,7 @@ class CityClimateRating {
         score += 40;
       }
     }
-    return score / days.length;
+    return validDays > 0 ? score / validDays : 0;
   }
 
   static double _calculatePrecipitationScore(List<ClimateDayRecordModel> days) {
@@ -68,25 +72,24 @@ class CityClimateRating {
     for (var day in days) {
       final precip = day.precipitation ?? 0;
       if (precip < 0.1) {
-        score += 100; // Без осадков
+        score += 100;
       } else if (precip < 2) {
-        score += 95; // Легкий дождь
+        score += 95;
       } else if (precip < 5) {
-        score += 90; // Умеренный дождь
+        score += 90;
       } else if (precip < 10) {
-        score += 80; // Сильный дождь
+        score += 80;
       } else if (precip < 20) {
-        score += 70; // Очень сильный дождь
+        score += 70;
       } else {
-        score += 60; // Экстремальные осадки
+        score += 60;
       }
     }
     return score / days.length;
   }
 
   static double _calculateSeasonalityScore(List<ClimateDayRecordModel> days) {
-    if (days.length < 30) return 40; // слишком мало данных
-    // Приводим month к int
+    if (days.length < 30) return 40;
     List<double> summerTemps = [];
     List<double> winterTemps = [];
     for (var d in days) {
@@ -97,13 +100,19 @@ class CityClimateRating {
         m = null;
       }
       if (m == null) continue;
-      final avg = ((d.tempMin ?? 0) + (d.tempMax ?? 0)) / 2;
+      // Пропускаем дни с нулевыми или отсутствующими данными температуры
+      if (d.tempMin == null || d.tempMax == null || d.tempMin == 0 || d.tempMax == 0) {
+        continue;
+      }
+      final avg = (d.tempMin! + d.tempMax!) / 2;
       if ([6, 7, 8].contains(m)) summerTemps.add(avg);
       if ([12, 1, 2].contains(m)) winterTemps.add(avg);
     }
-    // Если мало летних/зимних дней — считаем по всем дням
     if (summerTemps.length < 15 || winterTemps.length < 15) {
-      final allTemps = days.map((d) => ((d.tempMin ?? 0) + (d.tempMax ?? 0)) / 2).toList();
+      final allTemps = days
+          .where((d) => d.tempMin != null && d.tempMax != null && d.tempMin != 0 && d.tempMax != 0)
+          .map((d) => (d.tempMin! + d.tempMax!) / 2)
+          .toList();
       if (allTemps.isEmpty) return 40;
       final maxT = allTemps.reduce((a, b) => a > b ? a : b);
       final minT = allTemps.reduce((a, b) => a < b ? a : b);
@@ -125,35 +134,30 @@ class CityClimateRating {
   static double _calculateComfortScore(List<ClimateDayRecordModel> days) {
     if (days.isEmpty) return 0;
     double score = 0;
+    int validDays = 0;
     for (var day in days) {
-      final avgTemp = ((day.tempMin ?? 0) + (day.tempMax ?? 0)) / 2;
+      // Пропускаем дни с нулевыми или отсутствующими данными температуры
+      if (day.tempMin == null || day.tempMax == null || day.tempMin == 0 || day.tempMax == 0) {
+        continue;
+      }
+      validDays++;
+      final avgTemp = (day.tempMin! + day.tempMax!) / 2;
       final precip = day.precipitation ?? 0;
 
-      // Идеальные условия
       if (avgTemp >= 15 && avgTemp <= 28 && precip < 0.1) {
         score += 100;
-      }
-      // Очень комфортные условия
-      else if (avgTemp >= 12 && avgTemp <= 30 && precip < 2) {
+      } else if (avgTemp >= 12 && avgTemp <= 30 && precip < 2) {
         score += 95;
-      }
-      // Комфортные условия
-      else if (avgTemp >= 10 && avgTemp <= 32 && precip < 5) {
+      } else if (avgTemp >= 10 && avgTemp <= 32 && precip < 5) {
         score += 90;
-      }
-      // Умеренно комфортные условия
-      else if (avgTemp >= 5 && avgTemp <= 35 && precip < 10) {
+      } else if (avgTemp >= 5 && avgTemp <= 35 && precip < 10) {
         score += 80;
-      }
-      // Приемлемые условия
-      else if (avgTemp >= 0 && avgTemp <= 38 && precip < 20) {
+      } else if (avgTemp >= 0 && avgTemp <= 38 && precip < 20) {
         score += 70;
-      }
-      // Не комфортные, но терпимые условия
-      else {
+      } else {
         score += 60;
       }
     }
-    return score / days.length;
+    return validDays > 0 ? score / validDays : 0;
   }
 }

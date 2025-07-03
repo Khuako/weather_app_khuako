@@ -218,12 +218,12 @@ class MonthlyExtremesChart extends StatelessWidget {
             children: [
               _LegendDot(
                 color: Color(0xFF64B5F6),
-                label: 'Мин. температура',
+                label: 'Мин. темп.',
               ),
               SizedBox(width: 24),
               _LegendDot(
                 color: Color(0xFFEF5350),
-                label: 'Макс. температура',
+                label: 'Макс. темп.',
               ),
             ],
           ),

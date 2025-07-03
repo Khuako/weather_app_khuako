@@ -1,15 +1,15 @@
 import 'package:drift/drift.dart';
 
 class ClimateDayRecords extends Table {
-  TextColumn get cityId => text()(); // город или станция
+  TextColumn get cityId => text()();
   TextColumn get month => text()();
   TextColumn get year => text()();
-  RealColumn get tempMin => real().nullable()(); // минимальная температура
-  RealColumn get tempMax => real().nullable()(); // максимальная температура
-  RealColumn get precipitation => real().nullable()(); // осадки, мм
-  RealColumn get tempAvg => real().nullable()(); // может быть рассчитана при импорте
-  RealColumn get humidity => real().nullable()(); // если будет
-  RealColumn get windSpeed => real().nullable()(); // если будет
+  RealColumn get tempMin => real().nullable()();
+  RealColumn get tempMax => real().nullable()();
+  RealColumn get precipitation => real().nullable()();
+  RealColumn get tempAvg => real().nullable()();
+  RealColumn get humidity => real().nullable()();
+  RealColumn get windSpeed => real().nullable()();
 
   @override
   Set<Column> get primaryKey => {cityId, month, year};

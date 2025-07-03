@@ -50,14 +50,12 @@ Future<Position?> getCurrentLocation() async {
   bool serviceEnabled;
   LocationPermission permission;
 
-  // Проверка включения сервисов геолокации
   serviceEnabled = await Geolocator.isLocationServiceEnabled();
   if (!serviceEnabled) {
     print("Геолокация отключена.");
     return null;
   }
 
-  // Проверка разрешений
   permission = await Geolocator.checkPermission();
   if (permission == LocationPermission.denied) {
     permission = await Geolocator.requestPermission();
@@ -72,7 +70,6 @@ Future<Position?> getCurrentLocation() async {
     return null;
   }
 
-  // Получение текущих координат
   return await Geolocator.getCurrentPosition(
     desiredAccuracy: LocationAccuracy.high,
   );
@@ -97,14 +94,9 @@ void callbackDispatcher() {
 }
 
 void scheduleWeatherCheck() {
-  if (Platform.isAndroid) {
-    Workmanager().registerPeriodicTask(
-      "daily_weather_check",
-      "check_weather",
-      frequency: const Duration(hours: 12),
-    );
-  } else {
-    Workmanager().registerOneOffTask("daily_weather_check", "check_weather",
-        existingWorkPolicy: ExistingWorkPolicy.append);
-  }
+  Workmanager().registerPeriodicTask(
+    "check_weather",
+    "check_weather",
+    frequency: const Duration(hours: 1),
+  );
 }

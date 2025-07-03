@@ -25,23 +25,45 @@ class ClimateRepository {
     double lat,
     double lon,
   ) async {
-    if (_loadedCities.contains(cityId)) return;
+    debugPrint('🔍 Проверяем кеш для города: $cityId');
+
+    if (_loadedCities.contains(cityId)) {
+      debugPrint('✅ Город $cityId уже загружен в памяти');
+      return;
+    }
+
     final existingData = await _dao.getMonthlyStats(cityId);
     if (existingData.isNotEmpty) {
+      debugPrint('✅ Данные для города $cityId найдены в БД (${existingData.length} записей)');
       _loadedCities.add(cityId);
       return;
     }
+
+    debugPrint('📡 Загружаем данные для города $cityId из API...');
+
     final stationId = await api.getNearestStationId(lat, lon);
-    if (stationId == null) throw Exception('Станция не найдена');
+    if (stationId == null) {
+      debugPrint('❌ Станция не найдена для координат: $lat, $lon');
+      throw Exception('Станция не найдена');
+    }
+
+    debugPrint('📍 Найдена станция: $stationId');
+
     final records = await api.fetchMonthlyClimateByStation(
       cityId: cityId,
       stationId: stationId,
       start: '2005-01-01',
       end: '2024-12-31',
     );
+
+    debugPrint('📊 Получено ${records.length} записей климатических данных');
+
     final companions = records.map((r) => r.toCompanion()).toList();
     await _dao.insertClimateRecords(companions);
+
     _loadedCities.add(cityId);
+
+    debugPrint('✅ Данные для города $cityId успешно загружены и сохранены');
   }
 
   Future<void> addToSearchHistory(String cityId, String cityName, String stationId) async {
@@ -87,11 +109,18 @@ class ClimateRepository {
       if (cachedStats.isNotEmpty) {
         return cachedStats;
       }
+
       final coords = cityId.split('_');
       final lat = double.parse(coords[0]);
       final lon = double.parse(coords[1]);
       await loadAndCacheCityClimateFromApi(cityId, lat, lon);
-      return await _dao.getMonthlyStats(cityId);
+
+      final loadedStats = await _dao.getMonthlyStats(cityId);
+      if (loadedStats.isNotEmpty) {
+        return loadedStats;
+      }
+
+      return [];
     } catch (e) {
       debugPrint('Ошибка при получении месячной статистики: $e');
       rethrow;
@@ -104,11 +133,18 @@ class ClimateRepository {
       if (cachedExtremes.isNotEmpty) {
         return cachedExtremes;
       }
+
       final coords = cityId.split('_');
       final lat = double.parse(coords[0]);
       final lon = double.parse(coords[1]);
       await loadAndCacheCityClimateFromApi(cityId, lat, lon);
-      return await _dao.getExtremeValues(cityId);
+
+      final loadedExtremes = await _dao.getExtremeValues(cityId);
+      if (loadedExtremes.isNotEmpty) {
+        return loadedExtremes;
+      }
+
+      return [];
     } catch (e) {
       debugPrint('Ошибка при получении экстремальных значений: $e');
       rethrow;
@@ -121,11 +157,14 @@ class ClimateRepository {
       if (cachedIdealMonth != null) {
         return cachedIdealMonth;
       }
+
       final coords = cityId.split('_');
       final lat = double.parse(coords[0]);
       final lon = double.parse(coords[1]);
       await loadAndCacheCityClimateFromApi(cityId, lat, lon);
-      return await _dao.getIdealMonth(cityId);
+
+      final loadedIdealMonth = await _dao.getIdealMonth(cityId);
+      return loadedIdealMonth;
     } catch (e) {
       debugPrint('Ошибка при получении идеального месяца: $e');
       rethrow;

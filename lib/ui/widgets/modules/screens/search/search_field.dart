@@ -53,7 +53,12 @@ class _SearchFieldState extends State<SearchField> {
                   controller: TextEditingController(text: searchBloc.text),
                   cursorColor: Colors.white,
                   onChanged: (text) {
-                    searchBloc.add(TextControllerEvent(text: text));
+                    if (text.length > 3) {
+                      searchBloc.add(TextControllerEvent(text: text));
+                    }
+                  },
+                  onEditingComplete: () {
+                    searchBloc.add(TextControllerEvent(text: searchBloc.text));
                   },
                   decoration: const InputDecoration(
                     filled: true,

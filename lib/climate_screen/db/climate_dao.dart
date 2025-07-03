@@ -14,7 +14,6 @@ part 'climate_dao.g.dart';
 class ClimateDao extends DatabaseAccessor<LocalDatabase> with _$ClimateDaoMixin {
   ClimateDao(LocalDatabase db) : super(db);
 
-  // 1. Вставка списка записей (bulk insert)
   Future<void> insertClimateRecords(List<ClimateDayRecordsCompanion> entries) async {
     try {
       print('Начало вставки ${entries.length} записей в БД');
@@ -28,16 +27,14 @@ class ClimateDao extends DatabaseAccessor<LocalDatabase> with _$ClimateDaoMixin 
     }
   }
 
-  // 2. Получение среднего по месяцам
   Future<List<MonthlyClimateStats>> getMonthlyStats(String cityId) async {
     try {
-      print('Выполнение SQL-запроса для получения месячной статистики');
       final result = await customSelect(
         '''
         SELECT 
           month,
-          COALESCE(AVG(temp_min), 0) AS avg_min,
-          COALESCE(AVG(temp_max), 0) AS avg_max,
+          COALESCE(AVG(CASE WHEN temp_min IS NOT NULL AND temp_min != 0 THEN temp_min END), 0) AS avg_min,
+          COALESCE(AVG(CASE WHEN temp_max IS NOT NULL AND temp_max != 0 THEN temp_max END), 0) AS avg_max,
           COALESCE(COUNT(*) FILTER (WHERE precipitation > 0.1), 0) AS rainy_days
         FROM climate_day_records
         WHERE city_id = ? AND month IS NOT NULL
@@ -46,7 +43,6 @@ class ClimateDao extends DatabaseAccessor<LocalDatabase> with _$ClimateDaoMixin 
         ''',
         variables: [Variable.withString(cityId)],
       ).get();
-      print('Получено ${result.length} записей из БД');
 
       return result
           .where((row) => row.data['month'] != null)
@@ -58,15 +54,12 @@ class ClimateDao extends DatabaseAccessor<LocalDatabase> with _$ClimateDaoMixin 
               ))
           .toList();
     } catch (e) {
-      print('Ошибка при получении месячной статистики для города $cityId: $e');
       rethrow;
     }
   }
 
-  // 3. Экстремальные значения по годам
   Future<List<ExtremeValues>> getExtremeValues(String cityId) async {
     try {
-      print('Выполнение SQL-запроса для получения экстремальных значений');
       final result = await customSelect(
         '''
         WITH YearlyStats AS (
@@ -102,7 +95,6 @@ class ClimateDao extends DatabaseAccessor<LocalDatabase> with _$ClimateDaoMixin 
         ''',
         variables: [Variable.withString(cityId)],
       ).get();
-      print('Получено ${result.length} записей из БД');
 
       return result
           .where((row) => row.data['year'] != null)
@@ -114,15 +106,12 @@ class ClimateDao extends DatabaseAccessor<LocalDatabase> with _$ClimateDaoMixin 
               ))
           .toList();
     } catch (e) {
-      print('Ошибка при получении экстремальных значений для города $cityId: $e');
       rethrow;
     }
   }
 
-  // 4. Идеальный месяц (самое большое число "комфортных" дней)
   Future<IdealMonthResult?> getIdealMonth(String cityId) async {
     try {
-      print('Выполнение SQL-запроса для получения идеального месяца');
       final result = await customSelect(
         '''
         SELECT 
@@ -138,7 +127,6 @@ class ClimateDao extends DatabaseAccessor<LocalDatabase> with _$ClimateDaoMixin 
         ''',
         variables: [Variable.withString(cityId)],
       ).getSingleOrNull();
-      print('Результат запроса идеального месяца: ${result != null ? 'найден' : 'не найден'}');
 
       if (result == null || result.data['month'] == null) return null;
 
@@ -146,12 +134,10 @@ class ClimateDao extends DatabaseAccessor<LocalDatabase> with _$ClimateDaoMixin 
         month: result.read<String>('month'),
       );
     } catch (e) {
-      print('Ошибка при получении идеального месяца для города $cityId: $e');
       rethrow;
     }
   }
 
-  // 5. Удаление данных по городу (например, при обновлении)
   Future<void> deleteCityData(String cityId) async {
     try {
       print('Удаление данных для города $cityId');
@@ -163,7 +149,6 @@ class ClimateDao extends DatabaseAccessor<LocalDatabase> with _$ClimateDaoMixin 
     }
   }
 
-  // Получение всех дневных записей для города
   Future<List<ClimateDayRecordModel>> getAllDaysStats(String cityId) async {
     try {
       print('Выполнение SQL-запроса для получения всех дневных записей');

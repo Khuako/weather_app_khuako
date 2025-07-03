@@ -18,8 +18,10 @@ class MonthlyTemperatureChart extends StatelessWidget {
     final spots = <FlSpot>[];
 
     for (int i = 0; i < data.length; i++) {
-      final avgTemp = (data[i].avgMin + data[i].avgMax) / 2;
-      spots.add(FlSpot(i.toDouble(), avgTemp));
+      if (data[i].avgMin != 0 && data[i].avgMax != 0) {
+        final avgTemp = (data[i].avgMin + data[i].avgMax) / 2;
+        spots.add(FlSpot(i.toDouble(), avgTemp));
+      }
     }
 
     return Container(

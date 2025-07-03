@@ -44,7 +44,7 @@ class WeatherAssistantApp extends StatelessWidget {
       ],
       child: MaterialApp(
         supportedLocales: const [
-          Locale('ru', ''), // Русский
+          Locale('ru', ''),
         ],
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,

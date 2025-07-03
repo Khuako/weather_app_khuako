@@ -11,7 +11,6 @@ class AllRoutesCubit extends Cubit<AllRoutesState> {
 
   AllRoutesCubit({required this.repository}) : super(AllRoutesLoading());
 
-  /// Получение всех маршрутов
   Future<void> fetchAllRoutes() async {
     emit(AllRoutesLoading());
     try {
